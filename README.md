@@ -2,18 +2,18 @@
 
 ## Navigation 
 
-### App.js
+**App.js**
 
     islogin ? home : login
 
     if fasle
 
-   ### AuthNavigator.js
+    **AuthNavigator.js**
         SignInScreen.js
     
     if true
 
-   ### HomeNavigator.js(TapNavigator)
+   **HomeNavigator.js(TapNavigator)**
 
         HomeScreen.js
 
