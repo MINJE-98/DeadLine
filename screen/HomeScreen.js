@@ -11,19 +11,13 @@ class HomeScreen extends React.Component{
 
   getDB = () => firebase.database();
   getUserInfo = () => firebase.auth().currentUser;
+  getTeamName = (TeamUid) => this.state.TeamList[TeamUid].TeamName
 
-  getTeamName = (TeamUid) =>{
-    return this.state.TeamList[TeamUid].TeamName
-   
-  }
   showTeam = () =>{
     const TeamUid = Object.keys(this.state.TeamList)
-    const keyList =[]
-    for(const i in TeamUid){
-      keyList.push({key:TeamUid[i]})
-    }
+    const keyList = []
+    for(const i in TeamUid) keyList.push({key:TeamUid[i]})
     return keyList
-    
   }
   async getTeam(){
     let List;
