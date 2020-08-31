@@ -7,8 +7,7 @@ import firebase from 'firebase';
 class TeamScreen extends React.Component{
   
   render(){
-    const { params } = this.props.navigation.state;
-    const TeamUid = params ? params.TeamUid : null;
+    const { TeamUid } = this.props.route.params;
     return (
     <View><Text>{TeamUid}</Text></View>
     );

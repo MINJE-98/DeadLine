@@ -11,14 +11,17 @@ class HomeScreen extends React.Component{
 
   getDB = () => firebase.database();
   getUserInfo = () => firebase.auth().currentUser;
+
+  getTeamName = (TeamUid) =>{
+    return this.state.TeamList[TeamUid].TeamName
+   
+  }
   showTeam = () =>{
     const TeamUid = Object.keys(this.state.TeamList)
-    const TeamList = this.state.TeamList
     const keyList =[]
     for(const i in TeamUid){
-      keyList.push({key:{TeamUid:TeamUid[i], TeamName:TeamList[TeamUid[i]].TeamName}})
+      keyList.push({key:TeamUid[i]})
     }
-    console.log(keyList)
     return keyList
     
   }
@@ -110,7 +113,7 @@ class HomeScreen extends React.Component{
           :
             <View>
             <FlatList data={this.showTeam()} renderItem={({item}) => 
-            <Text onPress={()=> this.props.navigation.navigate('팀 정보', {TeamUid:item.key.TeamUid})}>{item.key.TeamName}</Text>} />
+            <Text onPress={()=> this.props.navigation.navigate('팀 정보', {TeamUid: item.key})}>{this.getTeamName(item.key)},{item.key} </Text>} />
             </View>
         }
           {/* <Text onPress={()=> this.setState({MakeTeamDialog: true})}>만들기</Text>
