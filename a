@@ -1,0 +1,137 @@
+
+
+// <Stack.Navigator>
+    //   <Stack.Screen name="가입"component={SignUpScreen}/>
+    //   <Stack.Screen name="리스트" component={HomeScreen} 
+    //     options={({ navigation }) =>({
+    //       headerLeft: () => (
+    //       <Icon name="ios-menu" size={35} color="black" 
+    //         onPress={() => navigation.openDrawer()}
+    //         style={{paddingLeft:15, alignItems:'center', justifyContent: 'center',}}
+    //       />),
+    //       headerRight: () =>(
+    //         <Icon name="md-add" size={35} color="black"
+    //           onPress={() => navigation.navigate('코드스캔')}
+    //           style={{paddingRight:15, alignItems:'center', justifyContent: 'center',}}
+    //       />)
+    //     })}
+    //   />
+
+    // <Stack.Screen name="코드스캔" component={CameraScreen}
+    //   options={
+    //     ({ navigation }) =>({
+    //       headerStyle:{
+    //         backgroundColor: '#000',
+    //         borderBottomWidth: 0,
+    //       },
+    //       headerTintColor: '#fff',
+    //       headerTitleStyle: {
+    //         fontWeight: 'bold',
+    //       },
+    //       headerLeft: () => (
+    //       <Icon
+    //         name="ios-close" 
+    //         size={35} 
+    //         color="black"
+    //         onPress={() => navigation.goBack()}
+    //         style={{paddingLeft:15, color:'#fff'}}
+    //       />),
+    //       headerRight: () =>(
+    //         <Icon
+    //         name="ios-create" 
+    //         size={35} 
+    //         color="black"
+    //         style={{paddingRight:15, color:'#fff'}}
+    //       />)
+    //     })
+    //   }/>
+    // <Stack.Screen name="상품 추가" component={ListAddScreen}></Stack.Screen>
+    // </Stack.Navigator>
+
+     state = {TeamUid: null, TeamName: "",Team: null, Loading: true, MakeTeamDialog: false, JoinTeamDialog: false}
+
+  getDB(){return firebase.database();}
+  getUserInfo(){return firebase.auth().currentUser;}
+  getTeam(){
+    const DB = this.getDB().ref('/Users/' + this.getUserInfo().uid + '/TeamUid')
+    DB.once('value').then(TeamData =>{
+      this.setState({Team: TeamData.val(), Loading: false})
+    })
+  }
+  checkTeam = () =>{
+   const TeamUid = this.state.TeamUid;
+  }
+  JoinTeam = () => {
+    const DB = this.getDB();
+    DB.ref('/Users/' + this.getUserInfo().uid)
+    .update({TeamUid: this.state.TeamUid})
+    DB.ref('/Teams/' + this.state.TeamUid)
+    .update(this.getUserInfo().uid)
+    this.Loading();
+  }
+  MakeTeam = () =>{
+    const TeamUid = Date.now();
+    const DB = this.getDB().ref('/Teams/' + TeamUid + '/' + this.state.TeamName)
+    DB.set({message: "상품을 추가해보세요!"})
+    this.setState({TeamUid: TeamUid, MakeTeamDialog: false, Loading: true},()=>{this.JoinTeam()})
+    
+  }
+  MakeTeampopup(){
+    return(
+      <View>
+        <Dialog.Container visible={this.state.MakeTeamDialog}>
+          <Dialog.Title>팀 생성!</Dialog.Title>
+          <Dialog.Description>
+            원하는 팀 이름을 작성해주세요.
+          </Dialog.Description>
+          <Dialog.Input onChangeText={data => this.setState({TeamName: data})}/>
+          <Dialog.Button label="취소" onPress={()=> this.setState({MakeTeamDialog: false})}/>
+          <Dialog.Button label="확인" onPress={()=> this.MakeTeam()}/>
+        </Dialog.Container>
+      </View>
+    )
+  }
+  JoinTeampopup(){
+    return(
+      <View>
+        <Dialog.Container visible={this.state.JoinTeamDialog}>
+          <Dialog.Title>팀 가입!</Dialog.Title>
+          <Dialog.Description>
+            가입할 팀 UID를 입력해주세요.
+          </Dialog.Description>
+          <Dialog.Input onChangeText={data => this.setState({TeamUid: data})}/>
+          <Dialog.Button label="취소" onPress={()=> this.setState({JoinTeamDialog: false})}/>
+          <Dialog.Button label="확인" onPress={()=> this.setState({JoinTeamDialog: false, Loading: true}, ()=>{this.JoinTeam()})}/>
+        </Dialog.Container>
+      </View>
+    )
+  }
+  Loading(){
+    if (this.state.Loading) {
+      this.getTeam();
+    return (
+      <View>
+        <ActivityIndicator size={'large'} />
+      </View>
+    );
+  }
+}
+
+{ this.state.Loading ? this.Loading() :
+        this.state.Team !=null
+        ? (
+          <SafeAreaView>
+            <ScrollView>
+              <Text>{this.state.Team}소속입니다.</Text>
+            </ScrollView>
+          </SafeAreaView>
+          ) 
+        : (
+          <View><Text>팀이 없습니다.! </Text>
+          <Text onPress={()=> this.setState({MakeTeamDialog: true})}>만들기</Text>
+          <Text onPress={()=> this.setState({JoinTeamDialog: true})}>가입</Text>
+          </View>
+        )
+        }
+        {this.MakeTeampopup()}
+        {this.JoinTeampopup()}
