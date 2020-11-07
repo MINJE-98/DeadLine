@@ -1,17 +1,10 @@
 # DeadLine 유통기한 관리 어플
 
-## Navigation 
+# 현재까지 구현된 기능
 
-**App.js**
-
-    로그인 데이터 확인 불가
-
-**AuthNavigator.js**
-        SignInScreen.js
-
-
-**HomeNavigator.js(TapNavigator)**
-
-        HomeScreen.js
-
-        SettingScreen.js
+20201107
+로그인
+팀 리스트
+팀 생성
+팀 정보
+바코드 스캔s
