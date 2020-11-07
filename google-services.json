@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "22858651573",
+    "firebase_url": "https://deadline-9e633.firebaseio.com",
+    "project_id": "deadline-9e633",
+    "storage_bucket": "deadline-9e633.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22858651573:android:cc052e4e9b20244ee8abfc",
+        "android_client_info": {
+          "package_name": "com.MJ98.DeadLine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22858651573-v0p4nmd46s089ua3eg0mu7l0f8vcf4ga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGDrATGhM9sxEVbiusSvl8isXCE3mY3pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22858651573-v0p4nmd46s089ua3eg0mu7l0f8vcf4ga.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "22858651573-hpkrtu8i3hn0cku3glv63s59nhpk90cm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.MJ98.DeadLine"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
