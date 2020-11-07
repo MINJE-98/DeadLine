@@ -5,7 +5,7 @@ import * as Facebook from 'expo-facebook'
 import * as GoogleSignIn from 'expo-google-sign-in'
 import {Default} from './fucs';
 
-export default class SignInScreen extends React.Component {
+export default function SignInScreen(){
   onLoginSuccess = () => {
     
     const userInfo = Default().UserInfo();
@@ -57,7 +57,6 @@ export default class SignInScreen extends React.Component {
     }
 
   }
-  render(){
     return (
       <TouchableWithoutFeedback
         onPress={() => {
@@ -100,7 +99,6 @@ export default class SignInScreen extends React.Component {
         </SafeAreaView>
       </TouchableWithoutFeedback>
     );
-  }
   }
 
 const styles = StyleSheet.create({

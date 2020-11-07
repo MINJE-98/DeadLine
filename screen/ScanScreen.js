@@ -3,8 +3,9 @@ import { Alert, Text, View, StyleSheet, Button, StatusBar, Modal, TouchableHighl
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import  Icon  from 'react-native-vector-icons/Ionicons';
 // import ListaddScreen from './screen/ListaddScreen';
+
 const cheerio = require('react-native-cheerio');
-function ScanScreen({ navigation }) {
+export default function ScanScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   // const [modalVisible, setModalVisible] = useState(false);
@@ -78,7 +79,6 @@ async function crawling(data){
   );
   }
 
-export default ScanScreen;
 
 const styles = StyleSheet.create({
   Scanner:{

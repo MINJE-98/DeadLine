@@ -4,16 +4,13 @@
 
 **App.js**
 
-    islogin ? home : login
+    로그인 데이터 확인 불가
 
-    if fasle
-
-    **AuthNavigator.js**
+**AuthNavigator.js**
         SignInScreen.js
-    
-    if true
 
-   **HomeNavigator.js(TapNavigator)**
+
+**HomeNavigator.js(TapNavigator)**
 
         HomeScreen.js
 

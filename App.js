@@ -1,35 +1,29 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import firebase from 'firebase';
 
 import {firebaseConfig} from './config'
-import AuthNavigator from './navigators/AuthNavigator'; 
+import SignInScreen from './screen/SignInScreen';
 import TabNavigator from './navigators/TabNavigator';
 firebase.initializeApp(firebaseConfig)
 
-const AppStack = createStackNavigator();
-
-// React.useEffect(()=>{
-//   firebase.auth().onAuthStateChanged( userInfo =>{
-//     setuserInfo(userInfo);
-//   })
-// })
-export default class App extends React.Component {
-  state = {userInfo: null}
-  componentDidMount = () =>{
-    firebase.auth().onAuthStateChanged( userInfo => this.setState({userInfo: userInfo}))
-  }
-  render(){
-    return(
-      <NavigationContainer>
-        <AppStack.Navigator>
-          { this.state.userInfo != null 
-            ? (<><AppStack.Screen name="App" component={TabNavigator} options={{title: "DeadLine", headerShown: false}}/></>)
-            : (<><AppStack.Screen name="Auth" component={AuthNavigator} options={{title: "DeadLine"}}/></>)
-          }
-        </AppStack.Navigator>
-      </NavigationContainer>
+const tab = createBottomTabNavigator();
+export default function App(){
+  const [userInfo, setuserInfo] = useState(null);
+  useEffect(()=>{
+    firebase.auth().onAuthStateChanged( userInfo =>{
+      setuserInfo(userInfo);
+    })
+  })
+  return(
+    <NavigationContainer>
+      <tab.Navigator>
+        { userInfo != null 
+          ? (<><tab.Screen name="App" component={TabNavigator} options={{tabBarVisible: false}}/></>)
+          : (<><tab.Screen name="Auth" component={SignInScreen} options={{tabBarVisible: false}}/></>)
+        }
+      </tab.Navigator>
+    </NavigationContainer>
   )
-  }
 }

@@ -1,122 +1,113 @@
-import * as React from 'react';
-import { Text, View, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, FlatList, AsyncStorage } from 'react-native';
-import  Icon  from 'react-native-vector-icons/Ionicons'
-import Dialog from "react-native-dialog";
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, TextInput, FlatList, AsyncStorage, Modal, Alert } from 'react-native';
+import {Header, Icon} from 'react-native-elements'
 import firebase from 'firebase';
 
-class HomeScreen extends React.Component{
-  state = {TeamUid: null, TeamName: '', TeamItems : null, Rank: 'User', TeamList: []
-  , Loading: true
-  , MakeTeamDialog: false, JoinTeamDialog: false}
+export default function HomeScreen(props){
 
-  getDB = () => firebase.database();
-  getUserInfo = () => firebase.auth().currentUser;
-  getTeamName = (TeamUid) => this.state.TeamList[TeamUid].TeamName
+  const [refreshing, setrefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [Loading, setLoding] = useState(true);
+  const [TeamList, setTeamList] = useState({});
+  const [TeamName, setTeamName] = useState(null);
+  
 
-  showTeam = () =>{
-    const TeamUid = Object.keys(this.state.TeamList)
-    const keyList = []
-    for(const i in TeamUid) keyList.push({key:TeamUid[i]})
-    return keyList
-  }
-  async getTeam(){
-    let List;
-    let isUser;
-   await this.getDB().ref('Teams').once('value').then( async Data=>{
-      List = Data.val()
-      const TeamList = Object.keys(Data.val())
-      console.log("\n\n")
-    for(const a in TeamList){
-    await this.getDB().ref('Teams/' + TeamList[a] + '/TeamMembers').once('value')
-      .then( Data2 =>{
-        const TeamUsers = Object.keys(Data2.val())
-            //현재 팀의 유저들 출력
-            for(const b in TeamUsers){
-              if(this.getUserInfo().uid != TeamUsers[b]) isUser = false
-              else isUser = true
-          }
-          if(!isUser) delete List[TeamList[a]]
-      })
+  useEffect(()=>{
+    // refrsh로 서버에서 데이터 불러오기
+    async function getTeamList(){
+      const LocalTeamList = await AsyncStorage.getItem("TeamList");
+      const obTeamList = JSON.parse(LocalTeamList)
+      console.log(obTeamList);
+      setrefreshing(true);
+      setLoding(false);
+      setTeamList(obTeamList);
+      refresh();
+    }
+    if(Loading){
+      getTeamList()
     }
   })
-  this.setState({TeamList: List, Loading: false})
+
+  const getDB = () => firebase.database();
+  const getUserInfo = () => firebase.auth().currentUser;
+  const getTeamName = (TeamUid) => TeamList[TeamUid].TeamName;
+  async function MakeTeam(){
+    Alert.alert("팀 생성","팀을 생성하시겠습니까?",
+    [{text:"취소", onPress: ()=>{setModalVisible(!modalVisible)}},
+    {text:"확인", onPress: () =>{
+        const TeamUid = Date.now();
+        getDB().ref('/Teams/' + TeamUid).set({
+          TeamName: TeamName
+        })
+        getDB().ref('/Teams/' + TeamUid + '/TeamMembers/' + getUserInfo().uid).set({
+          Rank: 'Admin'
+        })
+        setModalVisible(!modalVisible)
+        setLoding(true)
+      }}, 
+    ])
   }
-  JoinTeam = () => {
-   this.getDB().ref('/Teams/' + this.state.TeamUid).once('value', isTeam =>{
-      if(isTeam.val() == null){
-        Alert.alert("에러!","해당하는 UID가 없습니다.")
-      }else{
-       this.getDB().ref('/Teams/' + this.state.TeamUid + '/TeamMembers/' + this.getUserInfo().uid).update({
-         Rank: this.state.Rank
-       })
-      this.setState({JoinTeamDialog: false, Loading: true})
-      }
-   })
+  function showTeam(){
+    const keyList = []
+    if(!TeamList) return keyList
+    const TeamUid = Object.keys(TeamList)
+    TeamUid.forEach(element => keyList.push({key:element}))
+    return keyList
   }
-  MakeTeam = () =>{
-    const TeamUid = Date.now();
-    this.getDB().ref('/Teams/' + TeamUid).set({TeamName: this.state.TeamName})
-    this.setState({TeamUid: TeamUid, Rank: 'Admin', MakeTeamDialog: false, Loading: true}, ()=> this.JoinTeam())
+  async function refresh(){
+    getDB().ref('Teams').once('value').then( Data=>{
+      const TeamList = Data.val();
+      const TeamUid = Object.keys(TeamList);
+      TeamUid.forEach(element => {
+        const UserUid = Object.keys(TeamList[element]['TeamMembers'])
+        const UserFind = UserUid.find(element => {if(element == getUserInfo().uid) return element})
+        if(!UserFind) delete TeamList[element]
+      });
+      AsyncStorage.setItem("TeamList", JSON.stringify(TeamList))
+      setTeamList(TeamList)
+      setrefreshing(false)
+    })
   }
-  MakeTeampopup(){
-    return(
+  //
+  return (
+    <View>
+      <Header
+        statusBarProps={{ barStyle: 'light-content' }}
+        barStyle="light-content" // or directly
+        centerComponent={{ text: '팀 리스트', style: { color: '#fff' } }}
+        rightComponent={<Icon name='group-add' color='#fff' onPress={()=> setModalVisible(true)}/>}
+        containerStyle={{
+          backgroundColor: '#3D6DCC',
+          justifyContent: 'space-around',
+        }}
+      />
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <View 
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+          <View>
+            <TextInput placeholder="팀 이름 입력" onChangeText={Text => setTeamName(Text)}></TextInput>
+            <Text>초대할 친구 전화번호/카톡</Text>
+            <Text onPress={()=>{setModalVisible(!modalVisible)}}>취소</Text>
+            <Text onPress={()=>{MakeTeam()}}>생성</Text>
+          </View>
+        </View>
+      </Modal>
       <View>
-        <Dialog.Container visible={this.state.MakeTeamDialog}>
-          <Dialog.Title>팀 생성!</Dialog.Title>
-          <Dialog.Description>
-            원하는 팀 이름을 작성해주세요.
-          </Dialog.Description>
-          <Dialog.Input onChangeText={data => this.setState({TeamName: data})}/>
-          <Dialog.Button label="취소" onPress={()=> this.setState({MakeTeamDialog: false})}/>
-          <Dialog.Button label="확인" onPress={()=> this.MakeTeam()}/>
-        </Dialog.Container>
+        <FlatList
+        style={styles.List}
+        data={showTeam()}  
+        refreshing={refreshing} 
+        ListEmptyComponent={<Text>팀이 없습니다.</Text>} 
+        onRefresh={refresh} 
+        renderItem={({item}) => <Text onPress={()=> props.navigation.navigate('팀 정보', {TeamUid: item.key})}>{item.key}</Text>} />
       </View>
-    )
-  }
-  JoinTeampopup(){
-    return(
-      <View>
-        <Dialog.Container visible={this.state.JoinTeamDialog}>
-          <Dialog.Title>팀 가입!</Dialog.Title>
-          <Dialog.Description>
-            가입할 팀 UID를 입력해주세요.
-          </Dialog.Description>
-          <Dialog.Input onChangeText={data => this.setState({TeamUid: data})}/>
-          <Dialog.Button label="취소" onPress={()=> this.setState({JoinTeamDialog: false})}/>
-          <Dialog.Button label="확인" onPress={()=> this.JoinTeam()}/>
-        </Dialog.Container>
-      </View>
-    )
-  }
-  Loading(){
-    if (this.state.Loading) {
-      this.getTeam();
-    return (
-      <View>
-        <ActivityIndicator size={'large'} />
-      </View>
-    );
-  }
-}
-  render(){
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        { this.state.Loading ? this.Loading() :
-          !this.showTeam().length 
-          ? <Text>팀이 없습니다.</Text> 
-          :
-            <View>
-            <FlatList data={this.showTeam()} renderItem={({item}) => 
-            <Text onPress={()=> this.props.navigation.navigate('팀 정보', {TeamUid: item.key})}>{this.getTeamName(item.key)},{item.key} </Text>} />
-            </View>
-        }
-          {/* <Text onPress={()=> this.setState({MakeTeamDialog: true})}>만들기</Text>
-          <Text onPress={()=> this.setState({JoinTeamDialog: true})}>가입</Text> */}
-          {this.MakeTeampopup()}
-          {this.JoinTeampopup()}
-      </View>      
-    );
-  }
+    </View>      
+  ); 
+  
 }
   
 const styles = StyleSheet.create({
@@ -128,18 +119,20 @@ const styles = StyleSheet.create({
   Header:{
     position: 'absolute',
     backgroundColor: 'gray',
-    width: '95%',
-    height: '5%',
+    width: '100%',
+    height: '8%',
     top: 0,
     borderRadius: 4,
     margin: 10,
 
   },
-  team:{
-    position: 'absolute',
-    top: '40%',
-    width: 100,
-    height: 100,
+  List:{
+    height:'100%',
+    width: '100%'
+  },
+  ListView:{
+    justifyContent: "center",
+    alignItems: "center"
   },
   Scanner:{
     width:30,
@@ -148,4 +141,3 @@ const styles = StyleSheet.create({
     borderRadius:1
   },
 })
-export default HomeScreen;
