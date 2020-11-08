@@ -17,7 +17,6 @@ export default function HomeScreen(props){
     async function getTeamList(){
       const LocalTeamList = await AsyncStorage.getItem("TeamList");
       const obTeamList = JSON.parse(LocalTeamList)
-      console.log(obTeamList);
       setrefreshing(true);
       setLoding(false);
       setTeamList(obTeamList);
