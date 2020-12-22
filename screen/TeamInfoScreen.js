@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Modal, Text, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, Modal, Text, Image, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Header, Icon } from 'react-native-elements'
 import firebase from 'firebase';
@@ -8,13 +8,15 @@ const cheerio = require('react-native-cheerio');
 
 export default function TeamScreen(props){
   const [scanmodalVisible, setscanmodalVisible] = useState(false);
+  const [listmodalVisible, setlistmodalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
+  const [barcode, setbarcode] = useState(null);
   const [Goods, setGoods] = useState({});
-
   const { TeamUid } = props.route.params;
 
+  const getDB = () => firebase.database();
   useEffect(() => {
     crawling(8801094083007)
     if(scanmodalVisible){
@@ -25,34 +27,51 @@ export default function TeamScreen(props){
   }
   }, []);
   
-  async function crawling(data){
-    const url =`http://www.koreannet.or.kr/home/hpisSrchGtin.gs1?gtin=${data}`
-    try{
-      const response = await fetch(url); // fetch page
-      const htmlString =  await response.text(); // get response text
-      const $ = cheerio.load(htmlString);
-      const barcode_prod = $('.productTit').text();
-      const productTit = barcode_prod.replace(/\s/g,'').replace(data,'')
-      const image = $('img#detailImage').attr('src');
-      setGoods({
-        barcode: data,
-        productTit: productTit,
-        imageUrl: image,
-      })
-      // setscanmodalVisible(!scanmodalVisible);
-      setTimeout(() => {
-        setModalVisible(!modalVisible);
-      }, 100);
+function crawling(barcode){
+  // firebase에 해당 바코드 있는지 체크
+  getDB().ref(`Items/${barcode}`).once('value').then( sanpshot=>{
+    if(sanpshot.val() == null) {setbarcode(barcode)}
+    else {
+      setbarcode(barcode)
+      setGoods(sanpshot.val());
     }
-    catch(error){
-      alert(error)
-    }
-  }
-  const AddGoods = () =>{
-    const url = JSON.stringify(Goods.imageUrl)
-    console.log(url);
-    // firebase.storage().ref()
-    // .put(url).then(data => console.log("성공"))
+  })
+  // setscanmodalVisible(!scanmodalVisible);
+  setTimeout(() => {
+    setModalVisible(!modalVisible);
+  }, 100);
+}
+function showGoods() {
+  let keyList =[];
+  const list = Object.keys(Goods);
+  list.forEach(element => keyList.push({key:element}))
+  return keyList
+}
+  async function uploadImageAsync() {
+    const uri = Goods.imageUrl;
+    // Why are we using XMLHttpRequest? See:
+    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function(e) {
+        console.log(e);
+        reject(new TypeError('인터넷 열결 실패'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+  
+    const ref = firebase
+      .storage()
+      .ref(`/GoodsImage/${Goods.barcode}`)
+      .child(Goods.productTit);
+    const snapshot = await ref.put(blob);
+    blob.close();
+    console.log(await snapshot.ref.getDownloadURL());
   }
   const handleBarCodeScanned = ({data}) => {
     crawling(data);
@@ -88,11 +107,9 @@ export default function TeamScreen(props){
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.Scanner}
       />
-      {/* <View style={styles.shape}> */}
-      {/* <Icon name='clear' color='#fff' onPress={()=> setModalVisible(!modalVisible)}/> */}
-      {/* </View> */}
     </Modal>
     <Modal animationType="slide" transparent={true} visible={modalVisible}>
+      {/* {Goods != null ? setlistmodalVisible(true) : setModalVisible(!modalVisible)} */}
       <Header 
         leftComponent={<Icon name='clear' color='#000' onPress={()=> {setModalVisible(!modalVisible); setTimeout(() => {
           setscanmodalVisible(true);
@@ -111,9 +128,16 @@ export default function TeamScreen(props){
         ? <Image style={styles.profile} source={require('../no-image.png')}/> 
         : <Image style={styles.profile} source={{uri: Goods.imageUrl}}/>}
        </TouchableOpacity>
-       <TouchableOpacity onPress={()=> AddGoods()}>
+       <TouchableOpacity onPress={()=> uploadImageAsync()}>
          <Text>상품 추가</Text>
        </TouchableOpacity>
+    </Modal>
+    <Modal animationType="slide" transparent={true} visible={listmodalVisible}>
+    <View>
+        <FlatList
+        data={showGoods()} 
+        renderItem={({item}) => <Text>{item.key}</Text>} />
+      </View>
     </Modal>
     <Header 
       leftComponent={<Icon name='navigate-before' color='#fff' onPress={()=> props.navigation.goBack()}/> } 

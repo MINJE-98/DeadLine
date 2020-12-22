@@ -1,25 +1,66 @@
-import React from "react";
-import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,KeyboardAvoidingView,TouchableWithoutFeedback, Keyboard} from "react-native";
+import React, { useEffect, useState } from "react";
+import {AsyncStorage ,View,Text,StyleSheet,SafeAreaView,TouchableOpacity,KeyboardAvoidingView,TouchableWithoutFeedback, Keyboard,ActivityIndicator, Modal} from "react-native";
 import firebase from "firebase";
-import * as Facebook from 'expo-facebook'
-import * as GoogleSignIn from 'expo-google-sign-in'
-import {Default} from './fucs';
-
+import * as Facebook from 'expo-facebook';
+import * as GoogleSignIn from 'expo-google-sign-in';
+import LoadingScreen from '../component/Loading';
+import { SocialIcon } from 'react-native-elements'
+// firebase local != null ? onAuthstatechanged : onLoginSuccess
+// firebase LOCAL로 저장될 경우 onAuthstatechanged로 로그인 체크를 할 수 있다.
+// 
 export default function SignInScreen(){
-  onLoginSuccess = () => {
+  const [modalVisible, setmodalVisible] = useState(true);
+  useEffect(()=>{
+    firebase.auth().onAuthStateChanged( () =>{
+      setmodalVisible(false);
+    })
     
-    const userInfo = Default().UserInfo();
-    const DataBase = Default().DB().ref('/Users/'+ userInfo.uid);
+  }, [])
+
+// const ReadData = async () =>{
+//   try {
+//     const value = await AsyncStorage.getItem('UserInfo');
+//     if(value != null){
+//       ModalControl()
+//     }
+//     return 0;
+//   } catch (error) {
+//     alert(error)
+//     return 0;
+//   }
+// };
+// const SaveData = async data => {
+//   try {
+//     await AsyncStorage.setItem(
+//      'UserInfo', JSON.stringify(data)
+//     );
+//     return 0;
+//   } catch (error) {
+//     alert(error)
+//     return 0;
+//   }
+// };
+//   const ModalControl = () =>{
+//     setmodalVisible(!modalVisible);
+//     setTimeout(() => {
+//       setmodalVisible(false);
+//     }, 10000);
+//   }
+  const onLoginSuccess = () => {
+    const userInfo = firebase.auth().currentUser;
+    const DataBase = firebase.database().ref('/Users/'+ userInfo.uid);
     DataBase.once('value').then(data =>{
       if(!data.exists()){
         DataBase.set({
+          Name: userInfo.displayName,
           Email: userInfo.email,
         })
       }
     })
     .catch(error => alert(error))
+    // SaveData(userInfo)
   }
-  signInWithFacebook = async() =>{
+  const signInWithFacebook = async() =>{
     try {
       await Facebook.initializeAsync(
         '2604738803080027',
@@ -28,16 +69,19 @@ export default function SignInScreen(){
         permissions: ['public_profile', 'email'],
       });
       if (type === 'success') {
+        setmodalVisible(true);
         await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
         await firebase.auth().signInWithCredential(credential);
-        this.onLoginSuccess();
+        onLoginSuccess();
       }
+      return 0;
     } catch ({ message }) {
       alert(`Facebook Login Error: ${message}`);
+      return 0;
     }
   }
-  signInWithGoogle = async() => {
+  const signInWithGoogle = async() => {
     try {
       await GoogleSignIn.askForPlayServicesAsync();
       await GoogleSignIn.initAsync({
@@ -50,62 +94,33 @@ export default function SignInScreen(){
         const credential = firebase.auth.GoogleAuthProvider.credential(user.auth.idToken, user.auth.accessToken);
         // Sign in with credential from the Google user.
         await firebase.auth().signInWithCredential(credential)
-        this.onLoginSuccess();
+        onLoginSuccess();
       }
+      return 0;
     } catch ({ message }) {
       alert('login: Error:' + message);
+      return 0;
     }
 
   }
+
     return (
-      <TouchableWithoutFeedback
-        onPress={() => {
-          Keyboard.dismiss();
-        }}
-      >
-        <SafeAreaView style={{ flex: 1 }}>
-          <KeyboardAvoidingView style={styles.container} behavior="padding">
-            <TouchableOpacity 
-              style={{ width: "86%", marginTop: 10 }}
-              onPress={() => this.signInWithFacebook()}>
-              <View style={styles.button}>
-                <Text
-                  style={{
-                    letterSpacing: 0.5,
-                    fontSize: 16,
-                    color: "#FFFFFF"
-                  }}
-                >
-                  Continue with Facebook
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={{ width: "86%", marginTop: 10 }}
-              onPress={() => this.signInWithGoogle()}>
-              <View style={styles.googleButton}>
-                <Text
-                  style={{
-                    letterSpacing: 0.5,
-                    fontSize: 16,
-                    color: "#707070"
-                  }}
-                >
-                  Continue with Google
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    );
+      <View style={styles.container}>
+        <SocialIcon title="페이스북으로 시작하기" style={styles.button} button={true} type="facebook" onPress={signInWithFacebook} />
+        <SocialIcon title="구글로 시작하기"style={styles.button} button={true} type="google" onPress={signInWithGoogle}/>
+        <Modal animationType="none" transparent={true} visible={modalVisible}>
+          <LoadingScreen />
+        </Modal>
+      </View>
+    )
   }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: 'center'
   },
   form: {
     width: "86%",
@@ -121,23 +136,13 @@ const styles = StyleSheet.create({
     paddingBottom: 1.5,
     marginTop: 25.5
   },
-  button: {
-    backgroundColor: "#3A559F",
-    height: 44,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 22
+  button:{
+    width: "90%"
   },
-  googleButton: {
-    backgroundColor: "#FFFFFF",
-    height: 44,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: "#707070"
+  Loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 

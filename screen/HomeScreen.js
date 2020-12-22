@@ -1,80 +1,96 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TextInput, FlatList, AsyncStorage, Modal, Alert } from 'react-native';
+import { Text, View, StyleSheet, TextInput, FlatList, AsyncStorage, Modal, Alert, TouchableOpacity, StatusBar } from 'react-native';
 import {Header, Icon} from 'react-native-elements'
 import firebase from 'firebase';
+import { SafeAreaView } from 'react-native';
 
 export default function HomeScreen(props){
 
-  const [refreshing, setrefreshing] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [Loading, setLoding] = useState(true);
-  const [TeamList, setTeamList] = useState({});
-  const [TeamName, setTeamName] = useState(null);
+  const [refreshing, setrefreshing] = useState(false);// 푸쉽 새로고침.
+  const [modalVisible, setModalVisible] = useState(false);// 팀생성 모달
+  const [Loading, setLoding] = useState(true);// ?
+  const [TeamList, setTeamList] = useState(null);// 팀리스트
+  const [TeamName, setTeamName] = useState(null);// 팀이름.
   
-
-  useEffect(()=>{
-    // refrsh로 서버에서 데이터 불러오기
-    async function getTeamList(){
-      const LocalTeamList = await AsyncStorage.getItem("TeamList");
-      const obTeamList = JSON.parse(LocalTeamList)
-      setrefreshing(true);
-      setLoding(false);
-      setTeamList(obTeamList);
-      refresh();
-    }
-    if(Loading){
-      getTeamList()
-    }
-  })
-
   const getDB = () => firebase.database();
   const getUserInfo = () => firebase.auth().currentUser;
   const getTeamName = (TeamUid) => TeamList[TeamUid].TeamName;
-  async function MakeTeam(){
+  // 사용자에게 팀리스트 옮기기.
+  // 
+  useEffect(()=>{
+    // 로컬로 저장된 팀리스트 불러오기.
+    async function getTeamList(){
+      const LocalTeamList = await AsyncStorage.getItem("TeamList");
+      const obTeamList = JSON.parse(LocalTeamList)
+      setTeamList(obTeamList);
+    }
+    if(!TeamList) getTeamList()
+  })
+
+
+  const MakeTeam = async() =>{
     Alert.alert("팀 생성","팀을 생성하시겠습니까?",
     [{text:"취소", onPress: ()=>{setModalVisible(!modalVisible)}},
     {text:"확인", onPress: () =>{
         const TeamUid = Date.now();
+        getDB().ref('/Users/' + getUserInfo().uid + '/TeamList/' + TeamUid).set({
+          Teamname: TeamName,
+          Rank: 0
+        })
         getDB().ref('/Teams/' + TeamUid).set({
           TeamName: TeamName
         })
         getDB().ref('/Teams/' + TeamUid + '/TeamMembers/' + getUserInfo().uid).set({
-          Rank: 'Admin'
+          name: getUserInfo().displayName,
+          Rank: 0
         })
         setModalVisible(!modalVisible)
-        setLoding(true)
+        setrefreshing(true)
+        refresh()
       }}, 
     ])
   }
-  function showTeam(){
+  const showTeam = () =>{
     const keyList = []
     if(!TeamList) return keyList
     const TeamUid = Object.keys(TeamList)
     TeamUid.forEach(element => keyList.push({key:element}))
     return keyList
   }
-  async function refresh(){
-    getDB().ref('Teams').once('value').then( Data=>{
+  const refresh = async() =>{
+    getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
       const TeamList = Data.val();
       const TeamUid = Object.keys(TeamList);
-      TeamUid.forEach(element => {
-        const UserUid = Object.keys(TeamList[element]['TeamMembers'])
-        const UserFind = UserUid.find(element => {if(element == getUserInfo().uid) return element})
-        if(!UserFind) delete TeamList[element]
-      });
       AsyncStorage.setItem("TeamList", JSON.stringify(TeamList))
-      setTeamList(TeamList)
+      setTeamList(TeamList);
       setrefreshing(false)
     })
+    // getDB().ref('Teams').once('value').then( Data=>{
+    //   const TeamList = Data.val();
+    //   const TeamUid = Object.keys(TeamList);
+    //   TeamUid.forEach(element => {
+    //     const UserUid = Object.keys(TeamList[element]['TeamMembers'])
+    //     const UserFind = UserUid.find(element => {if(element == getUserInfo().uid) return element})
+    //     if(!UserFind) delete TeamList[element]
+    //   });
+    //   AsyncStorage.setItem("TeamList", JSON.stringify(TeamList))
+    //   setTeamList(TeamList)
+    //   setrefreshing(false)
+    // })
   }
-  //
+  const TeamMakeControl = () =>{
+    const TeamCount = Object.keys(TeamList).length;
+    console.log(TeamCount);
+    if(TeamCount < 3) setModalVisible(true);
+    else Alert.alert("에러!", "팀은 최대 3개까지 생성이 가능합니다.")
+  }
   return (
     <View>
       <Header
         statusBarProps={{ barStyle: 'light-content' }}
         barStyle="light-content" // or directly
         centerComponent={{ text: '팀 리스트', style: { color: '#fff' } }}
-        rightComponent={<Icon name='group-add' color='#fff' onPress={()=> setModalVisible(true)}/>}
+        rightComponent={<Icon name='group-add' color='#fff' onPress={()=> TeamMakeControl() }/>}
         containerStyle={{
           backgroundColor: '#3D6DCC',
           justifyContent: 'space-around',
@@ -95,15 +111,18 @@ export default function HomeScreen(props){
           </View>
         </View>
       </Modal>
-      <View>
+      <SafeAreaView style={{   flex: 1,
+    marginTop: StatusBar.currentHeight || 0,}}>
         <FlatList
-        style={styles.List}
+        style={{backgroundColor: "black", width: "95%", height: "100%"}}
         data={showTeam()}  
         refreshing={refreshing} 
         ListEmptyComponent={<Text>팀이 없습니다.</Text>} 
         onRefresh={refresh} 
-        renderItem={({item}) => <Text onPress={()=> props.navigation.navigate('팀 정보', {TeamUid: item.key})}>{item.key}</Text>} />
-      </View>
+        renderItem={({item}) => 
+        <TouchableOpacity style={styles.List} onPress={()=> props.navigation.navigate('팀 정보', {TeamUid: item.key})}><Text>{TeamList[item.key].Teamname}</Text></TouchableOpacity>
+        } />
+      </SafeAreaView>
     </View>      
   ); 
   
@@ -126,8 +145,18 @@ const styles = StyleSheet.create({
 
   },
   List:{
-    height:'100%',
-    width: '100%'
+    backgroundColor: "white",
+    marginTop: 10,
+    borderRadius: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.20,
+    shadowRadius: 1.41,
+
+    elevation: 2,
   },
   ListView:{
     justifyContent: "center",
