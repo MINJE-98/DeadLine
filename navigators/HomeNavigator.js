@@ -11,10 +11,10 @@ import TeamInfo from '../screen/TeamInfoScreen'
 const HomeStack = createStackNavigator();
 export default function  HomeNavigator(){
     return(
-        <HomeStack.Navigator>
+        <HomeStack.Navigator screenOptions={{headerShown: false}}>
             <HomeStack.Screen name="팀 리스트" component={Home} 
             // screenOptions={{headerShown:false}}
-            options={                
+            // options={                
             //     ({navigation}) => ({
             //         headerRight: () => (
             //             <Icon
@@ -26,8 +26,7 @@ export default function  HomeNavigator(){
             //             />
             //         )
             //     })
-                {headerShown:false}
-            }
+            // }
             />
             <HomeStack.Screen name="팀 정보" component={TeamInfo} options={{headerShown:false}}/>
             <HomeStack.Screen name="팀 생성" component={TeamMake} />

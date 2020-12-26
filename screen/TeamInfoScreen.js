@@ -18,7 +18,6 @@ export default function TeamScreen(props){
 
   const getDB = () => firebase.database();
   useEffect(() => {
-    crawling(8801094083007)
     if(scanmodalVisible){
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -86,6 +85,7 @@ function showGoods() {
   }
   return (
   <View>
+    {console.log(props)}
     <Modal animationType="slide" transparent={true} visible={scanmodalVisible}>
       {checkpermission()}
       <Header 
@@ -140,11 +140,11 @@ function showGoods() {
       </View>
     </Modal>
     <Header 
-      leftComponent={<Icon name='navigate-before' color='#fff' onPress={()=> props.navigation.goBack()}/> } 
-      centerComponent={{text: TeamUid, style: { color: '#fff' } }}
-      rightComponent={<Icon name='add' color='#fff' onPress={()=> setModalVisible(true)}/>}
+      leftComponent={<Icon name='navigate-before' color='#000' onPress={()=> props.navigation.goBack()}/> } 
+      centerComponent={{text: TeamUid, style: { color: '#000' } }}
+      rightComponent={<Icon name='add' color='#000' onPress={()=> props.navigation.navigate('ScanStack')} />}
       containerStyle={{
-        backgroundColor: '#3D6DCC',
+        backgroundColor: '#fff',
         justifyContent: 'space-around',
       }}
       />

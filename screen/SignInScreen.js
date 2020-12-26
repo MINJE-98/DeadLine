@@ -5,6 +5,7 @@ import * as Facebook from 'expo-facebook';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import LoadingScreen from '../component/Loading';
 import { SocialIcon } from 'react-native-elements'
+import { Platform } from "react-native";
 // firebase local != null ? onAuthstatechanged : onLoginSuccess
 // firebase LOCAL로 저장될 경우 onAuthstatechanged로 로그인 체크를 할 수 있다.
 // 

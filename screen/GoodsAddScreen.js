@@ -1,37 +1,41 @@
+import { useLinkProps } from '@react-navigation/native';
 import * as React from 'react';
 import { Text, View, Image, StyleSheet, StatusBar, TextInput } from 'react-native';
-import  Icon  from 'react-native-vector-icons/Ionicons'
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { render } from 'react-dom';
+import {Header, Icon} from 'react-native-elements';
 
-function Listadd({ route }) {
+export default function GoodsAddScreen(props) {
   
-  const { prodTit } = route.params;
-  const { imgUrl } = route.params;
-  const { barcode } = route.params;
-  const [value, onChangeText] = React.useState(prodTit);
+  const { barcode } = props.route.params;
+  // const [value, onChangeText] = React.useState();
    return (
-    
-      <View style={{ width: "100%", height:"100%", flexDirection: "row"}}>
-        <View style={styles.imgview}>
+      
+      <View>
+         <Header
+        statusBarProps={{ barStyle: 'light-content' }}
+        barStyle="light-content" // or directly
+        centerComponent={{ text: '상품 추가', style: {  color: '#000' } }}
+        leftComponent={<Icon name='group-back' color='#000' onPress={()=> props.navigation.goBack()}/>}
+        containerStyle={{
+          backgroundColor: '#fff',
+          justifyContent: 'space-around',
+        }}
+      />
+        {/* <View style={styles.imgview}>
           <Image 
               style={styles.img}
               source={{
                 uri: imgUrl,
               }} />
-        </View>
+        </View> */}
        
         <View style={styles.titleview}>
           <Text >{barcode}</Text>
-          <TextInput onChangeText={text => onChangeText(text)} value={value} />
         </View>
             
       </View>
     
   );
 }
-
-export default Listadd;
 
 const styles = StyleSheet.create({
   img:{

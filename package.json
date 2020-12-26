@@ -7,7 +7,13 @@
     "web": "expo start --web",
     "eject": "expo eject"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts"
+    ]
+  },
   "dependencies": {
+    "@expo/react-native-action-sheet": "^3.8.0",
     "@expo/vector-icons": "^10.2.0",
     "@material-ui/icons": "^4.9.1",
     "@react-native-community/masked-view": "0.1.5",
@@ -21,7 +27,9 @@
     "expo": "^37.0.12",
     "expo-app-auth": "~8.0.0",
     "expo-barcode-scanner": "^8.2.1",
+    "expo-camera": "^9.1.1",
     "expo-facebook": "^8.0.0",
+    "expo-font": "~8.1.0",
     "expo-google-sign-in": "~8.0.0",
     "firebase": "^7.16.0",
     "native-base": "^2.13.14",
@@ -30,13 +38,17 @@
     "react-dom": "~16.9.0",
     "react-loading-overlay": "^1.0.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
+    "react-native-actionsheet": "^2.4.2",
+    "react-native-camera-kit": "^10.0.0",
     "react-native-cheerio": "^1.0.0-rc.4",
     "react-native-cli": "^2.0.1",
     "react-native-dialog": "^5.6.0",
     "react-native-element": "^1.2.1",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "~1.5.0",
+    "react-native-image-picker": "^3.1.2",
     "react-native-navigation": "^6.9.0",
+    "react-native-parallax-header": "^1.1.4",
     "react-native-reanimated": "~1.4.0",
     "react-native-safe-area-context": "0.6.0",
     "react-native-screens": "2.0.0-alpha.12",
@@ -44,7 +56,8 @@
     "react-native-web": "~0.11.7",
     "react-navigation": "^4.4.0",
     "react-navigation-stack": "^2.8.2",
-    "yard": "^1.0.3"
+    "yard": "^1.0.3",
+    "expo-image-picker": "~8.1.0"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",

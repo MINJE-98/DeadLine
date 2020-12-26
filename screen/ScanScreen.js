@@ -1,87 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Text, View, StyleSheet, Button, StatusBar, Modal, TouchableHighlight } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { TextInput, Text, View, StyleSheet, Image, StatusBar, Modal, TouchableOpacity } from 'react-native';
+import { Header, Icon } from 'react-native-elements';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import  Icon  from 'react-native-vector-icons/Ionicons';
-// import ListaddScreen from './screen/ListaddScreen';
+import ActionSheet from 'react-native-actionsheet';
+import * as ImagePicker from 'expo-image-picker';
+import firebase from "firebase";
 
-const cheerio = require('react-native-cheerio');
-export default function ScanScreen({ navigation }) {
+
+
+
+export default function ScanScreen(props) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [select, setselect] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  // const [modalVisible, setModalVisible] = useState(false);
-async function crawling(data){
-  const url =`http://www.koreannet.or.kr/home/hpisSrchGtin.gs1?gtin=${data}`
-  try{
-    const response = await fetch(url); // fetch page
-    const htmlString =  await response.text(); // get response text
-    const $ = cheerio.load(htmlString);
-    const productTit = $('.productTit').text();
-    const imageUrl = $('img#detailImage').attr('src');
-   
-    navigation.navigate('상품 추가', {prodTit: productTit.replace(/\s/g,'').replace(data,''), imgUrl: imageUrl, barcode: data});
-    }
-   catch(error){
-    alert(error)
-  }
-}
+  const [Goods, setGoods] = useState({});
+  let actionSheet = useRef();
+
   useEffect(() => {
-    (async () => {
+    async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    }
+      //카메라 권한 확인
+      async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-    })();
+    }
   }, []);
-
   const handleBarCodeScanned = ({data}) => {
+    console.log("scaning!");
+    
+    props.navigation.navigate('GoodsAdd', {barcode: data});
     setScanned(true);
-    crawling(data);
-
-    // setModalVisible(true);
   };
-
-  if (hasPermission === null) {
-    return <Text>카메라 권한이 없습니다.</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>카메라에 접근할 수 없습니다.</Text>;
-  }
-
+  // const checkpermission = () =>{
+  //   if (hasPermission === null) {
+  //     return <Text>카메라 권한이 없습니다.</Text>;
+  //   }
+  //   if (hasPermission === false) {
+  //     return <Text>카메라에 접근할 수 없습니다.</Text>;
+  //   }
+  // }
+  const pickImage = async () => {
+    const storageRef = firebase.storage().ref();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.images,
+      allowsEditing: true,
+      aspect: [2, 2],
+      quality: 0,
+    });
+    if (!result.cancelled) {
+    //  storageRef.child('GoodsImage/' + result.uri).put(result.uri, {contentType: 'iamge/jpg'}).then( ()=> console.log("업로드 완료."))
+    Goods.imageUrl = result.uri;
+    setGoods(Goods);
+      
+    }
+  };
+  const showActionSheet = () => {
+    actionSheet.current.show();
+  };
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-      }}>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+    <View style={styles.container}>
+      {console.log(scanned)}
+      
+      {scanned ? <></>
+      // <Header 
+      //   // leftComponent={<Icon name='clear' color='#000' onPress={()=> {setModalVisible(!modalVisible); setScanned(false)}}/> } 
+      //   centerComponent={{text: "상품 추가", style: { color: '#000' }}}
+      //   containerStyle={{
+      //     backgroundColor: '3D6DCC',
+      //     justifyContent: 'space-around',
+      //   }}/>
+        :
       <BarCodeScanner
         onBarCodeScanned={handleBarCodeScanned}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.Scanner}
-      />
-      <View style={styles.shape}>
-        <Icon name="ios-qr-scanner" style={{ position: 'absolute',fontSize:30, color: '#ffd700',}}/>
-        <Icon name="ios-barcode" style={{ position: 'absolute', fontSize:20, color: '#ffd700',}}/>
-        <View style={styles.centeredView}>
-          {/* <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => { Alert.alert("Modal has been closed.");}}> 
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <TouchableHighlight style={{ ...styles.openButton, backgroundColor: "#2196F3" }} onPress={() => { setModalVisible(!modalVisible);}}>
-              <Text>Hide Modal</Text>
-              </TouchableHighlight>
-            </View>
-          </View>
-          </Modal> */}
-        </View>
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+        style={styles.container}
+        
+      >
+        </BarCodeScanner>
+      }
+
+      
+      <Modal animationType="slide" transparent={false} visible={modalVisible}>
+        <View style={styles.modal}>
+          {/* <Text>{Goods.barcode}</Text>
+          <TextInput onChangeText={Text => { Goods.productTit = Text; setGoods(Goods)}}></TextInput>
+          <TextInput onChangeText={Text => { Goods.count = Text; setGoods(Goods)}}></TextInput>
+          <TextInput onChangeText={Text => { Goods.date = Text; setGoods(Goods)}}></TextInput> */}
+        <TouchableOpacity onPress={showActionSheet}>
+          {Goods.imageUrl == null 
+          ? <Image style={styles.profile} source={require('../no-image.png')}/> 
+          : <Image style={styles.profile} source={{uri: Goods.imageUrl}}/>}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=> console.log(Goods)}>
+          <Text>상품 추가</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=> {setModalVisible(!modalVisible); setScanned(false)}}>
+          <Text>취소</Text>
+        </TouchableOpacity>
       </View>
+      </Modal>
+      <ActionSheet
+          ref={actionSheet}
+          options={['앨범에서 사진 선택', '사진 촬영', '취소']}
+          cancelButtonIndex={2}
+          destructiveButtonIndex={1}
+          onPress={(index) => {
+              switch (index) {
+                case 0:
+                  pickImage()
+                  break;
+                case 1:
+                  break;
+                default:
+                  break;
+              }
+          }}
+        />
+
     </View>
   );
   }
 
 
 const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+    flexDirection: 'column',
+  },
   Scanner:{
+    width: "100%",
+    height: "103%",
     position: 'absolute',
     left: 0,
     right: 0,
@@ -89,11 +144,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 1,
   },
-  shape:{
-    flex: 1,
+  modal:{
+    backgroundColor: "gray",
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
-    alignItems: "center",
-    zIndex: 2,
   },
   modalText: {
     marginBottom: 15,
@@ -117,5 +172,10 @@ const styles = StyleSheet.create({
       alignItems: "center",
       marginTop: 22
     },
-
+    profile:{
+      backgroundColor: "black",
+      width: "50%",
+      height: "50%",
+      borderRadius: 150
+    },
 });
