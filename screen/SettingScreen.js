@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, View, StyleSheet, Text, Image, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
-import  Icon  from 'react-native-vector-icons/Ionicons'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { Icon, Header } from 'react-native-elements';
 import firebase from 'firebase';
 
 class SettingScreen extends React.Component {
@@ -22,6 +22,16 @@ class SettingScreen extends React.Component {
 render(){
   return (
     <SafeAreaView style={styles.safearea}>
+      <Header
+        statusBarProps={{ barStyle: 'light-content' }}
+        barStyle="light-content" // or directly
+        centerComponent={{ text: 'DeadLine', style: {  color: '#000' } }}
+        leftComponent={<Icon name='keyboard-arrow-left' color='#000' onPress={()=> this.props.navigation.goBack()}/>}
+        containerStyle={{
+          backgroundColor: '#fff',
+          justifyContent: 'space-around',
+        }}
+      />
       <ScrollView>
         { <View style={styles.main}>
           {this.getUserInfo().photoURL == null 

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Text, View, Image, StyleSheet, StatusBar, TextInput } from 'react-native';
 import {Header, Icon} from 'react-native-elements';
 
+
 export default function GoodsAddScreen(props) {
   
   const { barcode } = props.route.params;

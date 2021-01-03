@@ -1,17 +1,16 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screen/HomeScreen';
 import SettingScreen from '../screen/SettingScreen';
-import ScanScreen from '../screen/ScanScreen';
 
-const AppTab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 export default class TabNavigator extends React.Component {
   render(){
     return(
-      <AppTab.Navigator>
-          <AppTab.Screen name="Home" component={HomeScreen} />
-          <AppTab.Screen name="Setting" component={SettingScreen} />
-      </AppTab.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Setting" component={SettingScreen} />
+      </Stack.Navigator>
     )
   }
 }

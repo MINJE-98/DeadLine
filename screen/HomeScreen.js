@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TextInput, FlatList, AsyncStorage, Modal, Alert, TouchableOpacity, StatusBar } from 'react-native';
+import { Text, View, StyleSheet, TextInput, FlatList, Modal, Alert, TouchableOpacity } from 'react-native';
 import {Header, Icon} from 'react-native-elements'
 import firebase from 'firebase';
 import { SafeAreaView } from 'react-native';
 
 export default function HomeScreen(props){
 
-  const [refreshing, setrefreshing] = useState(false);// 푸쉽 새로고침.
+  const [refreshing, setrefreshing] = useState(true);// 푸쉽 새로고침.
   const [modalVisible, setModalVisible] = useState(false);// 팀생성 모달
   const [TeamList, setTeamList] = useState(null);// 팀리스트
   const [TeamName, setTeamName] = useState(null);// 팀이름.
+
   const getDB = () => firebase.database();
   const getUserInfo = () => firebase.auth().currentUser;
   // 사용자에게 팀리스트 옮기기.
 
   useEffect(()=>{
-    // 로컬로 저장된 팀리스트 불러오기.
-    async function getTeamList(){
-      const LocalTeamList = await AsyncStorage.getItem("TeamList");
-      const obTeamList = JSON.parse(LocalTeamList)
-      setTeamList(obTeamList);
-    }
-    if(!TeamList) getTeamList()
+    if(!TeamList) refresh()
   })
 
   
@@ -56,9 +51,7 @@ export default function HomeScreen(props){
   }
   const refresh = async() =>{
     getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
-      const TeamList = Data.val();
-      AsyncStorage.setItem("TeamList", JSON.stringify(TeamList))
-      setTeamList(TeamList);
+      setTeamList(Data.val());
       setrefreshing(false)
     })
     // getDB().ref('Teams').once('value').then( Data=>{
@@ -90,6 +83,7 @@ export default function HomeScreen(props){
   const TeamInfoControl = ( key ) =>{
     getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
       const TeamList = Data.val();
+      const TeamList2 = Data.val().key;
       let Teamkey =[];
       if(TeamList) Teamkey = Object.keys(TeamList);
       if(!Teamkey.includes(key)) {
@@ -97,17 +91,17 @@ export default function HomeScreen(props){
         setrefreshing(true); 
         refresh();
       }
-      else props.navigation.navigate('TeamInfo', {TeamUid: TeamList[key].Teamname})
+    else props.navigation.navigate('TeamTab', {TeamName: TeamList[key].Teamname, TeamUid : key}) /*, { screen: 'TeamInfo', params:{  TeamName: TeamList[key].Teamname, TeamUid : key}})*/
     })
   }
   return (
     <View>
-      {console.log(props)}
       <Header
         statusBarProps={{ barStyle: 'light-content' }}
         barStyle="light-content" // or directly
-        centerComponent={{ text: '팀 리스트', style: {  color: '#000' } }}
-        rightComponent={<Icon name='group-add' color='#000' onPress={()=> TeamMakeControl() }/>}
+        centerComponent={{ text: 'DeadLine', style: {  color: '#000' } }}
+        leftComponent={<Icon name='group-add' color='#000' onPress={()=> TeamMakeControl() }/>}
+        rightComponent={<Icon name='settings' color='#000' onPress={()=> props.navigation.navigate('Setting')}/>}
         containerStyle={{
           backgroundColor: '#fff',
           justifyContent: 'space-around',
