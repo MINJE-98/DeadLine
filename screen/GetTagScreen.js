@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, TextInput } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
-import {Context} from '../context';
+import {Context} from '../component/context';
 
 export default function GetTagScreen(props){
     const test = useContext(Context)

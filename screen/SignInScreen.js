@@ -1,65 +1,43 @@
 import React, { useEffect, useState } from "react";
-import {AsyncStorage ,View,Text,StyleSheet,SafeAreaView,TouchableOpacity,KeyboardAvoidingView,TouchableWithoutFeedback, Keyboard,ActivityIndicator, Modal} from "react-native";
+import { View,StyleSheet, Modal } from "react-native";
 import firebase from "firebase";
 import * as Facebook from 'expo-facebook';
 import * as GoogleSignIn from 'expo-google-sign-in';
-import LoadingScreen from '../component/Loading';
+
+import {LoadingScreen} from '../component/Loading';
 import { SocialIcon } from 'react-native-elements'
-import { Platform } from "react-native";
-// firebase local != null ? onAuthstatechanged : onLoginSuccess
-// firebase LOCAL로 저장될 경우 onAuthstatechanged로 로그인 체크를 할 수 있다.
-// 
+
+
 export default function SignInScreen(){
   const [modalVisible, setmodalVisible] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
+
+  const userDB = firebase.database().ref('/Users/');
+
   useEffect(()=>{
-    firebase.auth().onAuthStateChanged( () =>{
-      setmodalVisible(false);
+     firebase.auth().onAuthStateChanged( userdata =>{
+      userdata && setUserInfo(userdata)
+      setmodalVisible(false)
     })
-    
   }, [])
 
-// const ReadData = async () =>{
-//   try {
-//     const value = await AsyncStorage.getItem('UserInfo');
-//     if(value != null){
-//       ModalControl()
-//     }
-//     return 0;
-//   } catch (error) {
-//     alert(error)
-//     return 0;
-//   }
-// };
-// const SaveData = async data => {
-//   try {
-//     await AsyncStorage.setItem(
-//      'UserInfo', JSON.stringify(data)
-//     );
-//     return 0;
-//   } catch (error) {
-//     alert(error)
-//     return 0;
-//   }
-// };
-//   const ModalControl = () =>{
-//     setmodalVisible(!modalVisible);
-//     setTimeout(() => {
-//       setmodalVisible(false);
-//     }, 10000);
-//   }
-  const onLoginSuccess = () => {
-    const userInfo = firebase.auth().currentUser;
-    const DataBase = firebase.database().ref('/Users/'+ userInfo.uid);
-    DataBase.once('value').then(data =>{
+  function onLoginSuccess() {
+    userDB
+    .once('value')
+    .child(userInfo.uid)
+    .then(data =>{
       if(!data.exists()){
-        DataBase.set({
+        userDB
+        .child(userInfo.uid)
+        .set({
           Name: userInfo.displayName,
           Email: userInfo.email,
+          Photo: userInfo.photoURL
         })
       }
     })
+    .then(setmodalVisible(false))
     .catch(error => alert(error))
-    // SaveData(userInfo)
   }
   const signInWithFacebook = async() =>{
     try {

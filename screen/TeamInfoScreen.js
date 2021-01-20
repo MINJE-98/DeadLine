@@ -1,57 +1,118 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, TouchableOpacity, SectionList } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { Header, Icon } from 'react-native-elements'
 import firebase from 'firebase';
-import {Context} from '../context';
+import {Context} from '../component/context';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import ScanScreen from './ScanScreen';
+import {ListLoading} from '../component/Loading';
 
-export default function TeamScreen(props){
+export default function TeamScreen({ navigation, route }){
   const {TeamName, TeamUid} = useContext(Context);
+  const [Loading, setLoading] = useState(true);
+  const [refreshing, setrefreshing] = useState(true);
   const [Items, setItems] = useState(null);
-  const [Itemstemp, setItemstemp] = useState(null);
+  const [barcode, setbarcode] = useState({});
+
+  const RootRef = firebase.database().ref()
     useEffect(()=>{
+      if(route.params){
+        if(route.params.refreshing){
+          getitems()
+        }
+      }
       if(!Items) getitems()
-    })
-    const getitems = () =>{
-      firebase.database().ref('Teams/' + TeamUid + '/TeamItems').once('value').then( Data =>{
-        let list = []
-        Data.forEach( a =>{
-          list.push({title: a.key, data: Object.keys(a.val())})
+    }, [route.params])
+
+  async function getitems() {
+    setLoading(true)
+    await RootRef
+    .child('Teams')
+    .child(TeamUid)
+    .child('Items')
+    .once('value', Data =>{
+      let items = new Object;
+      //null 검사.
+      if(Data.val()){
+        const itemsTemp = Object.keys(Data.val())
+        itemsTemp.forEach( a =>{
+          RootRef.child('Items').child(a).once('value', b=>{
+            items = {
+              ...items, [b.key]:b.val()
+            }
+            
+            setbarcode(items);
+          })
         })
-        setItems(list);
-        setItemstemp(Data.val());
+      }
+    })
+    .then(()=> {
+      RootRef
+      .child('Teams')
+      .child(TeamUid)
+      .child('DeadLine')
+      .once('value', Data =>{
+        let list = new Array;
+        if(Data.val()){
+          Data.forEach( a =>{
+            list.push({title: a.key, data: Object.keys(a.val())})
+          })
+          setItems(list);
+          setrefreshing(false)
+        }
       })
+      .then(()=> {setLoading(false);})
+      .catch(error => {alert(error); setLoading(false)})
+    })
+    .catch(error => {alert(error); setLoading(false)})
+  }
+    //1577-0038
+    const renderItem = ({item}) =>{
+      return(
+        <View style={{backgroundColor: 'white'}}>
+        <TouchableOpacity style={{flexDirection: "row", borderBottomWidth: 1, borderColor: "#808080", padding: 10}}>
+          <Image style={{backgroundColor: "black", width: 70, height: 70, marginRight: 10}} source={{uri: barcode[item].img}}/>
+          <View style={{flexDirection: "column"}}>
+            <Text>{barcode[item].name}</Text>
+            <Text>{item}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>)
     }
-    // 1 , 880
-    // 1 , 881
-    // 2 , 882
-    const getItemsTemp = (date, barcode) =>{
-      // Object.keys(Itemstemp).find( key => {if(key === date) Object.keys(Itemstemp[key]).find( code => {if(code === barcode) console.log(Itemstemp[key[code]]);})})
-      console.log(Iem);
+    const renderSectionHeader = ({section}) => {
+      const now = new Date(2021,0,17);
+      console.log(section.title);
+      // const nowString = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`
+
+
+      const result = Math.ceil(((now.getTime()-section.title)/(1000*3600*24)*-1))
+      return (
+        <Text>{result}일 남음</Text>
+      )
     }
   return (
     <View>
-      {console.log(Itemstemp)}
     <Header 
-      leftComponent={<Icon name='navigate-before' color='#000' onPress={()=> props.navigation.navigate('Home')}/> } 
+      leftComponent={<Icon name='navigate-before' color='#000' onPress={()=> navigation.navigate('Home')}/> } 
       centerComponent={<View style={{alignItems: "center"}}><Text>{TeamName}</Text><Text style={{fontSize: 10, color: "#808080"}}>{TeamUid}</Text></View>}
-      rightComponent={<Icon name='add' color='#000' onPress={()=> props.navigation.navigate('ScanStack', {TeamUid: TeamUid})} />}
+      rightComponent={<Icon name='add' color='#000' onPress={()=> navigation.navigate('ScanStack',{screen: 'Scan', params: {TeamUid: TeamUid, refreshing: false}})} />}
       containerStyle={{
         backgroundColor: '#fff',
         justifyContent: 'space-around',
       }}
       />
+      {Loading ? <ListLoading /> :
       <SafeAreaView>
         <SwipeListView
         useSectionList
-        style={{width: "100%", height: "100%"}}
         sections={Items}
-        renderItem={({section: { title }, item}) => <Text>{item}</Text>}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text>{title}</Text>
-        )}
+        onRefresh={getitems}
+        refreshing={refreshing}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
         />
       </SafeAreaView>
+      }
     </View>
   );
 }

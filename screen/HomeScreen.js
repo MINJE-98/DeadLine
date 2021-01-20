@@ -1,97 +1,91 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TextInput, FlatList, Modal, Alert, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Text, View, StyleSheet, TextInput, FlatList, Modal, Alert, TouchableOpacity, Animated, Button } from 'react-native';
 import {Header, Icon} from 'react-native-elements'
-import firebase from 'firebase';
+import firebase, { functions } from 'firebase';
 import { SafeAreaView } from 'react-native';
+import { ListLoading } from '../component/Loading';
 
 export default function HomeScreen(props){
 
   const [refreshing, setrefreshing] = useState(true);// 푸쉽 새로고침.
-  const [modalVisible, setModalVisible] = useState(false);// 팀생성 모달
   const [TeamList, setTeamList] = useState(null);// 팀리스트
-  const [TeamName, setTeamName] = useState(null);// 팀이름.
 
-  const getDB = () => firebase.database();
-  const getUserInfo = () => firebase.auth().currentUser;
+  const RootRef = firebase.database().ref();
+  const getUserInfo = firebase.auth().currentUser;
   // 사용자에게 팀리스트 옮기기.
 
   useEffect(()=>{
-    if(!TeamList) refresh()
-  })
+    if(props.route.params) {
+      if(props.route.params.Changed){
+        refresh();
+      }
+    }
+    TeamList || refresh();
+  },[props.route.params])
 
-  
-  const MakeTeam = async() =>{
-    Alert.alert("팀 생성","팀을 생성하시겠습니까?",
-    [{text:"취소", onPress: ()=>{setModalVisible(!modalVisible)}},
-    {text:"확인", onPress: () =>{
-        const TeamUid = Date.now();
-        getDB().ref('/Users/' + getUserInfo().uid + '/TeamList/' + TeamUid).set({
-          Teamname: TeamName,
-          Rank: 0
-        })
-        getDB().ref('/Teams/' + TeamUid).set({
-          TeamName: TeamName
-        })
-        getDB().ref('/Teams/' + TeamUid + '/TeamMembers/' + getUserInfo().uid).set({
-          name: getUserInfo().displayName,
-          Rank: 0
-        })
-        setModalVisible(!modalVisible)
-        setrefreshing(true)
-        refresh()
-      }}, 
-    ])
-  }
-  const showTeam = () =>{
-    const keyList = []
-    if(!TeamList) return keyList
-    const TeamUid = Object.keys(TeamList)
-    TeamUid.forEach(element => keyList.push({key:element}))
-    return keyList
-  }
-  const refresh = async() =>{
-    getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
-      setTeamList(Data.val());
-      setrefreshing(false)
+
+  const refresh = () =>{
+    //NoSql Join해서 값 가져오기.
+    RootRef.child('Users').child(getUserInfo.uid).child('TeamList').once('value').then( snapshot =>{
+      let List =[];
+      //null 확인.
+      if(snapshot.val() != null){
+        for (const key in snapshot.val()) {
+          RootRef.child('Teams').child(key).child('TeamName').once('value').then( snapshot2 =>{
+            List.push({TeamUid: key, TeamName: snapshot2.val()});
+          }).then(()=> setTeamList(List))
+          .then(()=> setrefreshing(false))
+          .catch(error => alert(error));
+        }
+      //null일 경우.
+      }else{
+        setTeamList(null)
+        setrefreshing(false);
+      }
     })
-    // getDB().ref('Teams').once('value').then( Data=>{
-    //   const TeamList = Data.val();
-    //   const TeamUid = Object.keys(TeamList);
-    //   TeamUid.forEach(element => {
-    //     const UserUid = Object.keys(TeamList[element]['TeamMembers'])
-    //     const UserFind = UserUid.find(element => {if(element == getUserInfo().uid) return element})
-    //     if(!UserFind) delete TeamList[element]
-    //   });
-    //   AsyncStorage.setItem("TeamList", JSON.stringify(TeamList))
-    //   setTeamList(TeamList)
-    //   setrefreshing(false)
-    // })
+    .then(()=>console.log("Refreshing.."))
+    .catch(error => alert(error));
   }
   const TeamMakeControl = () =>{
-    getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
-      const TeamList = Data.val();
-      let TeamCount =[];
-      if(TeamList) TeamCount = Object.keys(TeamList).length;
-      if(TeamCount < 3) setModalVisible(true);
+    RootRef.child('Users').child(getUserInfo.uid).child('TeamList').once('value', Data =>{
+      const List = Data.val();
+      let TeamCount = 0;
+      //null값일 경우 0
+      if(!List) TeamCount = 0;
+      //null이 아닐경우
+      if(List) TeamCount = Object.keys(List).length;
+      //3이상 일경우.
+      if(TeamCount < 3) props.navigation.navigate('NewTeam')
       else {
-        Alert.alert("에러!", "팀은 최대 3개까지 생성이 가능합니다.")
-        setrefreshing(true); 
-        refresh();
+        Alert.alert("", "팀은 최대 3팀까지 생성/가입이 가능합니다.");
       }
     })
+    .catch(error => alert(error));
   }
-  const TeamInfoControl = ( key ) =>{
-    getDB().ref('Users/' + getUserInfo().uid + '/TeamList').once('value').then( Data =>{
-      const TeamList = Data.val();
-      const TeamList2 = Data.val().key;
-      let Teamkey =[];
-      if(TeamList) Teamkey = Object.keys(TeamList);
-      if(!Teamkey.includes(key)) {
-        Alert.alert("오류!","해당 팀에 접근할 수 없습니다."); 
-        setrefreshing(true); 
+  const TeamCheck = ( key ) =>{
+    RootRef
+      .child('Users')
+      .child(getUserInfo.uid)
+      .child('TeamList')
+      .once('value')
+      .then( Data =>{
+      const TList = Data.val();
+      //TeamList가 null값일때.
+      if(!TList){
+        Alert.alert("","해당 팀에 접근할 수 없습니다.\n강퇴를 당했거나, 해체되었는지 확인하세요."); 
+        setrefreshing(true);
         refresh();
       }
-    else props.navigation.navigate('TeamTab', {TeamName: TeamList[key].Teamname, TeamUid : key}) /*, { screen: 'TeamInfo', params:{  TeamName: TeamList[key].Teamname, TeamUid : key}})*/
+      //TeamList에 null이 아니고, 해당키가 없을때.
+      else if(TList){
+        const Teamkey  = Object.keys(Data.val());
+        if(!Teamkey.includes(key)) {
+          Alert.alert("","해당 팀에 접근할 수 없습니다.\n강퇴를 당했거나, 해체되었는지 확인하세요."); 
+          setrefreshing(true);
+          refresh();
+        }
+        else props.navigation.navigate('TeamStack', {TeamName: TList[key].TeamName, TeamUid : key});
+      }
     })
   }
   return (
@@ -99,41 +93,29 @@ export default function HomeScreen(props){
       <Header
         statusBarProps={{ barStyle: 'light-content' }}
         barStyle="light-content" // or directly
-        centerComponent={{ text: 'DeadLine', style: {  color: '#000' } }}
-        leftComponent={<Icon name='group-add' color='#000' onPress={()=> TeamMakeControl() }/>}
+        centerComponent={{ text: '팀 리스트', style: {  color: '#000' } }}
+        leftComponent={<Icon name='group-add' color='#000' onPress={()=> TeamMakeControl()}/>}
         rightComponent={<Icon name='settings' color='#000' onPress={()=> props.navigation.navigate('Setting')}/>}
         containerStyle={{
           backgroundColor: '#fff',
           justifyContent: 'space-around',
         }}
       />
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View 
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center"
-          }}>
-          <View>
-            <TextInput placeholder="팀 이름 입력" onChangeText={Text => setTeamName(Text)}></TextInput>
-            <Text>초대할 친구 전화번호/카톡</Text>
-            <Text onPress={()=>{setModalVisible(!modalVisible)}}>취소</Text>
-            <Text onPress={()=>{MakeTeam()}}>생성</Text>
-          </View>
-        </View>
-      </Modal>
       <SafeAreaView style={styles.ListView}>
-        <FlatList
+      {refreshing ? <ListLoading /> : 
+        <FlatList　
         style={{width: "100%", height: "100%"}}
-        data={showTeam()}  
+        data={TeamList}  
         refreshing={refreshing} 
         ListEmptyComponent={<Text>팀이 없습니다.</Text>} 
         onRefresh={refresh} 
+        keyExtractor={(item)=> item.TeamUid}
         renderItem={({item}) => 
-        <TouchableOpacity style={styles.List} onPress={()=> TeamInfoControl( item.key )}>
-          <Text>{TeamList[item.key].Teamname}</Text>
+        <TouchableOpacity key={item.TeamUid} style={styles.List} onPress={()=> TeamCheck( item.TeamUid )}>
+          <Text style={{width: "100%", height: 100}}>{item.TeamName}</Text>
         </TouchableOpacity>
         } />
+      }
       </SafeAreaView>
     </View>      
   ); 
@@ -159,18 +141,11 @@ const styles = StyleSheet.create({
   List:{
     backgroundColor: "white",
     width: "90%",
-    padding: 50,
+    padding: 10,
     margin: 20,
     borderRadius: 5,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.30,
-    shadowRadius: 4.65,
-    
-    elevation: 8,
+    elevation: 1,
   },
   ListView:{
     justifyContent: "center",

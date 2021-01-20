@@ -4,6 +4,9 @@ import { StyleSheet } from 'react-native';
 import GoodsAddScreen from './screen/GoodsAddScreen';
 
 export default StyleSheet.create({
+    /**
+     *  ScanScreen.js
+     */
     Goods_Profile_Modal:{
         width: "100%",
         height: "100%",
@@ -13,6 +16,7 @@ export default StyleSheet.create({
         Goods_Top:{
             marginTop: 30,
             width: '100%',
+            height: 160,
             flexDirection: 'row',
             backgroundColor: "white",
             shadowColor: "#000",
@@ -92,6 +96,34 @@ export default StyleSheet.create({
                 width: '30%',
                 margin: 10,
                 
-            }
+            },
+    /**
+     * Loading.js
+     */
+    Loading_Container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    Loading_Wall: {
+        position: "absolute", 
+        opacity: 0.5, 
+        backgroundColor: "black", 
+        width: "100%", 
+        height: "100%"
+      },
+
+    /**
+     * Loading.js, HomeScreen.js
+     */
+    Team_List:{
+        backgroundColor: "white",
+        width: "90%",
+        height: 130,
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
+      },
+    
 
 });
