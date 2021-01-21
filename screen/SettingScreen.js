@@ -22,16 +22,6 @@ class SettingScreen extends React.Component {
 render(){
   return (
     <SafeAreaView style={styles.safearea}>
-      <Header
-        statusBarProps={{ barStyle: 'light-content' }}
-        barStyle="light-content" // or directly
-        centerComponent={{ text: '설정', style: {  color: '#000' } }}
-        leftComponent={<Icon name='keyboard-arrow-left' color='#000' onPress={()=> this.props.navigation.goBack()}/>}
-        containerStyle={{
-          backgroundColor: '#fff',
-          justifyContent: 'space-around',
-        }}
-      />
       <ScrollView>
         { <View style={styles.main}>
           {this.getUserInfo().photoURL == null 

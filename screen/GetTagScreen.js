@@ -10,16 +10,6 @@ export default function GetTagScreen(props){
 // 어질어질하다..
   return (
     <View>
-        {console.log(test)}
-        <Header 
-            centerComponent={{text: "팀 태그"}}
-            leftComponent={{text: "생성"}}
-            rightComponent={{text: "편집"}}
-            containerStyle={{
-            backgroundColor: '#fff',
-            justifyContent: 'space-around',
-        }}
-        />
       <Text></Text>
      </View>
  );

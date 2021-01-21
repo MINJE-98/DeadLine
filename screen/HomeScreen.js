@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, TextInput, FlatList, Modal, Alert, TouchableOpacity, Animated, Button } from 'react-native';
 import {Header, Icon} from 'react-native-elements'
-import firebase, { functions } from 'firebase';
+import firebase from 'firebase';
 import { SafeAreaView } from 'react-native';
 import { ListLoading } from '../component/Loading';
 
@@ -15,10 +15,8 @@ export default function HomeScreen(props){
   // 사용자에게 팀리스트 옮기기.
 
   useEffect(()=>{
-    if(props.route.params) {
-      if(props.route.params.Changed){
-        refresh();
-      }
+    if(props.route.params?.Changed) {
+      refresh()
     }
     TeamList || refresh();
   },[props.route.params])
@@ -46,22 +44,7 @@ export default function HomeScreen(props){
     .then(()=>console.log("Refreshing.."))
     .catch(error => alert(error));
   }
-  const TeamMakeControl = () =>{
-    RootRef.child('Users').child(getUserInfo.uid).child('TeamList').once('value', Data =>{
-      const List = Data.val();
-      let TeamCount = 0;
-      //null값일 경우 0
-      if(!List) TeamCount = 0;
-      //null이 아닐경우
-      if(List) TeamCount = Object.keys(List).length;
-      //3이상 일경우.
-      if(TeamCount < 3) props.navigation.navigate('NewTeam')
-      else {
-        Alert.alert("", "팀은 최대 3팀까지 생성/가입이 가능합니다.");
-      }
-    })
-    .catch(error => alert(error));
-  }
+ 
   const TeamCheck = ( key ) =>{
     RootRef
       .child('Users')
@@ -84,13 +67,14 @@ export default function HomeScreen(props){
           setrefreshing(true);
           refresh();
         }
-        else props.navigation.navigate('TeamStack', {TeamName: TList[key].TeamName, TeamUid : key});
+        else props.navigation.navigate('TeamNavigator', {TeamName: TList[key].TeamName, TeamUid : key});
       }
     })
   }
   return (
     <View>
-      <Header
+      {console.log(props)}
+      {/* <Header
         statusBarProps={{ barStyle: 'light-content' }}
         barStyle="light-content" // or directly
         centerComponent={{ text: '팀 리스트', style: {  color: '#000' } }}
@@ -100,7 +84,7 @@ export default function HomeScreen(props){
           backgroundColor: '#fff',
           justifyContent: 'space-around',
         }}
-      />
+      /> */}
       <SafeAreaView style={styles.ListView}>
       {refreshing ? <ListLoading /> : 
         <FlatList　

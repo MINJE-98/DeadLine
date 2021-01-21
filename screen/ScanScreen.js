@@ -43,14 +43,6 @@ export default function ScanScreen({ navigation, route }) {
           
           style={styles.container}
         >
-      <Header
-        leftComponent={<Icon name='keyboard-arrow-left' color='#000' onPress={()=> navigation.navigate('TeamInfo', {refreshing: route.params.refreshing})}/>}
-        centerComponent={{ text: '상품 추가', style: {  color: '#000' } }}
-        containerStyle={{
-          backgroundColor: '#fff',
-          justifyContent: 'space-around',
-        }}
-      />
       <View style={{ width: "100%", height: "65%"}} />
       <View style={{ flex: 1, flexDirection: "row", backgroundColor:"white", width: "100%", height: "35%"}} >
         <Text>바코드입력</Text>

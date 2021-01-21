@@ -7,10 +7,13 @@ import { Modal } from 'react-native';
 
 export default function NewTeamMakeScreen(props){
   const [joinModal, setJoinModal] = useState(false);
-  const [teamUid, setTeamUid] = useState(null);// 팀이름.
+  const [makeModal, setMakeModal] = useState(false);
+  const [teamUid, setTeamUid] = useState(null);
+  const [teamName, setTeamName] = useState(null);
 
   const joinRef = firebase.database().ref('TeamJoin');
   const teamRef = firebase.database().ref('Teams');
+  const userRef = firebase.database().ref('Users');
   const userInfo = firebase.auth().currentUser;
 
   const JoinTeam = () =>{
@@ -31,40 +34,76 @@ export default function NewTeamMakeScreen(props){
             .then(()=> Alert.alert("","가입 신청이 완료되었습니다."))
             .then(()=> setJoinModal(false))
             .then(()=> props.navigation.navigate('Home'))
+            .catch(error => alert(error))
           }
         })
-        
+        .catch(error => alert(error))
       }
     })
+    .catch(error => alert(error))
   }
+  const MakeTeam = () =>{
+    Alert.alert("팀 생성","팀을 생성하시겠습니까?",
+    [{text:"취소", style: "cancel"},
+    {text:"확인", onPress: () =>{
+      const TeamUid = generateUID();
+      userRef.child(userInfo.uid).child('TeamList').child(TeamUid).set({
+        TeamName: teamName
+      })
+      .catch(error => alert(error))
+      teamRef.child(TeamUid).set({
+        TeamName: teamName
+      })
+      .catch(error => alert(error))
+      teamRef.child(TeamUid).child('TeamMembers').child(userInfo.uid).set({
+        name: userInfo.displayName,
+        img: userInfo.photoURL,
+        Rank: 0
+      })
+      .then(()=> setMakeModal(false))
+      .then(()=> props.navigation.navigate('Home', {Changed: true}))
+      .catch(error => alert(error)) 
+      }},
+    ])
+  }
+  function generateUID() {
+    // I generate the UID from two parts here 
+    // to ensure the random number provide enough bits.
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart;
+}
   return (
     <View>
-      <Header
-        statusBarProps={{ barStyle: 'light-content' }}
-        barStyle="light-content" // or directly
-        centerComponent={{ text: '팀 추가', style: {  color: '#000' } }}
-        leftComponent={<Icon name='keyboard-arrow-left' color='#000' onPress={()=> props.navigation.goBack()}/>}
-        containerStyle={{
-          backgroundColor: '#fff',
-          justifyContent: 'space-around',
-        }}
-      />
       <View style={styles.container}>
         <Text>새로운 팀에 가입하거나 팀을 생성하세요!</Text>
         <TouchableOpacity>
           <Text onPress={()=> setJoinModal(true)}>팀 가입</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text onPress={()=> props.navigation.navigate('MakeTeam')} >팀 생성</Text>
+          <Text onPress={()=> setMakeModal(true)} >팀 생성</Text>
         </TouchableOpacity>
       </View>
-      <Modal animationType="slide" transparent={true} visible={joinModal}>
+      <Modal animationType="fade" transparent={true} visible={joinModal}>
         <View style={styles.Modal}>
           <View style={styles.ModalView}>
-            <TextInput placeholder="팀 UID 입력" onChangeText={Text => setTeamUid(Text)}></TextInput>
+            <TextInput style={{height: 30, borderBottomWidth: 1, borderBottomColor: '#808080'}} placeholder="팀 UID 입력" onChangeText={Text => setTeamUid(Text)}></TextInput>
             <View style={styles.ModalButtonView}>
               <Text style={styles.ModalButton} onPress={()=> setJoinModal(false)}>취소</Text>
               <Text style={styles.ModalButton} onPress={()=> JoinTeam()}>가입</Text>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal animationType="fade" transparent={true} visible={makeModal}>
+        <View style={styles.Modal}>
+          <View style={styles.ModalView}>
+            <TextInput style={{height: 30, borderBottomWidth: 1, borderBottomColor: '#808080'}} placeholder="팀 이름 입력" onChangeText={Text => setTeamName(Text)}></TextInput>
+            <View style={styles.ModalButtonView}>
+              <Text style={styles.ModalButton} onPress={()=> setMakeModal(false)}>취소</Text>
+              <Text style={styles.ModalButton} onPress={()=> MakeTeam()}>생성</Text>
             </View>
           </View>
         </View>
@@ -80,16 +119,17 @@ const styles = StyleSheet.create({
   },
   Modal:{
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   ModalView:{
+    
     backgroundColor: "white",
     alignItems: "center",
     width: 250,
     height: 150,
     borderRadius: 20,
-    padding: 20,
+    paddingTop: 40,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -99,7 +139,6 @@ const styles = StyleSheet.create({
   },
   ModalButtonView:{
     flexDirection: "row",
-    marginTop: 50
   },
   ModalButton:{
     padding: 10

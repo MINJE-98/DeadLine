@@ -40,7 +40,6 @@ export default function TeamScreen({ navigation, route }){
             items = {
               ...items, [b.key]:b.val()
             }
-            
             setbarcode(items);
           })
         })
@@ -92,15 +91,6 @@ export default function TeamScreen({ navigation, route }){
     }
   return (
     <View>
-    <Header 
-      leftComponent={<Icon name='navigate-before' color='#000' onPress={()=> navigation.navigate('Home')}/> } 
-      centerComponent={<View style={{alignItems: "center"}}><Text>{TeamName}</Text><Text style={{fontSize: 10, color: "#808080"}}>{TeamUid}</Text></View>}
-      rightComponent={<Icon name='add' color='#000' onPress={()=> navigation.navigate('ScanStack',{screen: 'Scan', params: {TeamUid: TeamUid, refreshing: false}})} />}
-      containerStyle={{
-        backgroundColor: '#fff',
-        justifyContent: 'space-around',
-      }}
-      />
       {Loading ? <ListLoading /> :
       <SafeAreaView>
         <SwipeListView
