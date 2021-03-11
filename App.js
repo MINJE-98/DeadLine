@@ -1,19 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { connect, Provider } from 'react-redux';
+import { createStore, combineReducers } from 'redux';
+import * as Facebook from 'expo-facebook';
 
-import HomeStack from './navigators/HomeStack';
-import TeamNavigator from './navigators/TeamTabNavigator';
+import indexscreen from './screens/index';
+import { islogin } from './service/redux.reducers';
 
-const appTab = createStackNavigator();
-export default function App(){
-  return(
-    <NavigationContainer>
-      <appTab.Navigator screenOptions={{headerShown: false}}>
-       <appTab.Screen name="HomeStack" component={HomeStack} />
-       <appTab.Screen name="TeamNavigator" component={TeamNavigator} />
-      </appTab.Navigator>
-    </NavigationContainer>
+
+const store = createStore(combineReducers({islogin}));
+// reducer들을 store안에 넣어서 새로운 스토어를 생성해준다.
+
+const index  = connect(state => ({ islogin: state.islogin}))(indexscreen);
+//indexscreen을 store에 연결해줍니다.
+
+const Stack = createStackNavigator();
+export default class App extends Component{
+
+  render(){
+    return(
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false,}}>
+            <Stack.Screen name="Index" component={index}/>
+          </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   )
+  }
 }

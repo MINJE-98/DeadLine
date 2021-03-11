@@ -1,14 +1,7 @@
 {
   "expo": {
-    "name": "DeadLine",
-    "slug": "DeadLine",
-    "privacy": "public",
-    "sdkVersion": "37.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "name": "Deadline",
+    "slug": "Deadline",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,25 +17,16 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier":"com.MJ98.DeadLine",
-      "buildNumber":"1.0.0",
-      "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "config": {
-        "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.22858651573-hpkrtu8i3hn0cku3glv63s59nhpk90cm"
-        }
+      "bundleIdentifier": "com.minje9801.Deadline"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
       }
     },
-    "android":{
-      "package": "com.MJ98.DeadLine",
-      "versionCode": 1,
-      "googleServicesFile": "./google-services.json",
-      "config":{
-        "googleSignIn":{
-          "certificateHash": "3D:0C:B4:37:27:DD:33:8D:17:9C:09:CD:0B:E6:9A:D3:73:0F:A3:91"
-        }
-      }
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }
