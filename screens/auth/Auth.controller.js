@@ -1,7 +1,6 @@
 import * as Facebook from 'expo-facebook';
-import FacebookInit from '../../../service/facebook.config';
-import * as api from '../../../service/Deadline.api';
-import axios from 'axios';
+import FacebookInit from '../../service/facebook.config';
+import * as api from '../../service/Deadline.api';
 
 export const signInWithFacebook = async(props) =>{
     try {

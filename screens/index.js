@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux'
-import * as Facebook from 'expo-facebook';
+import { AuthAsync } from '../service/facebookfnc'
 
-
-import FacebookInit from '../service/facebook.config';
 import SignInScreen from  './auth/Auth.Screen';
-import HomeScreen from './home/home.screen';
+import HomerootNavigator from '../navigators/Home.rootnavigator';
 
 //스크린을 islogin store에 연결해줍니다.
 const Signin  = connect(state => ({ islogin: state.islogin}))(SignInScreen);
-const Home  = connect(state => ({ islogin: state.islogin}))(HomeScreen);
+const Home  = connect(state => ({ islogin: state.islogin}))(HomerootNavigator);
 
 const Stack = createStackNavigator();
 export default class Index extends Component{
       componentDidMount(){
-        this.AuthAsync();
+        AuthAsync(this.props);
       }
         /**
          * 어플 실행시 유저 체크
@@ -29,16 +27,6 @@ export default class Index extends Component{
          *  1. DB에 등록한다.
          * 5. 등록이 완료되었으면 home으로 넘겨준다.
         */
-      AuthAsync = async() => {
-        await FacebookInit;
-        // 현재 접속한 유저가 로그인이 되어있는지 확인합니다.
-        const auth = await Facebook.getAuthenticationCredentialAsync();// 어떻게 작동하는지 모르겠다.
-        if (!auth) {
-            this.props.dispatch({type: 'logout'})
-        } else {
-          this.props.dispatch({type: 'login'})
-        }
-      }
     render(){
         return(
         <Stack.Navigator screenOptions={{headerShown: false}}>

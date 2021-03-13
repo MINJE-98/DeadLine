@@ -22,7 +22,7 @@ export default class App extends Component{
     return(
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false,}}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name="Index" component={index}/>
           </Stack.Navigator>
       </NavigationContainer>

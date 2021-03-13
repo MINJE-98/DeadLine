@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, KeyboardAvoidingView, Alert} from "react-native";
 
-import { signInWithFacebook } from './controller/Auth.controller';
+import { signInWithFacebook } from './Auth.controller';
 
 export default class SignInScreen extends Component{
   render(){

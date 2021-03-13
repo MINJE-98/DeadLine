@@ -12,3 +12,8 @@ export const set_data = (location, data) =>{
 export const get_userinfo = (token) =>{
     return axios.get(`https://graph.facebook.com/me?fields=id%2Cname%2Cemail%2Cpicture.type(large)&access_token=${token}`)
 }
+
+export const craeteTeam = (location, data) =>{
+    console.log(`http://localhost:3000/api/${location}${data}`);
+    return axios.post(`http://localhost:3000/api/${location}${data}`);
+}
