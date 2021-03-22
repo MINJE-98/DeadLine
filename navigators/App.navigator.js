@@ -3,8 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux'
 import { AuthAsync } from '../service/facebookfnc'
 
-import SignInScreen from  './auth/Auth.Screen';
-import HomerootNavigator from '../navigators/Home.rootnavigator';
+import SignInScreen from  '../screens/auth/Auth.Screen';
+import HomerootNavigator from './Modal.navigator';
 
 //스크린을 islogin store에 연결해줍니다.
 const Signin  = connect(state => ({ islogin: state.islogin}))(SignInScreen);

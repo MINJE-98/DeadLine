@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { MakeTeam } from './teams.make.controller';
-import { userid } from '../../../../service/facebookfnc';
-
+import { maketeam } from '../../../../controller/Home.controller';
+import { get_token } from '../../../../service/facebookfnc';
+import { Context } from '../../../../service/conext';
 
 export default class MakeTeamScreen extends Component {
+  static contextType = Context
+
     state ={
-      teamname : "", uid: "",
+      teamname : "", token: "",
     }
     componentDidMount(){
-      userid(this.props).then( uid => this.setState({uid: uid}))
+      get_token().then( token => this.setState({token: token}))
     }
     render(){
         return(
@@ -22,7 +24,7 @@ export default class MakeTeamScreen extends Component {
                 <TouchableOpacity style={[styles.ModalButton, { borderColor: "#adb5bd", borderWidth: 1}]} onPress={()=> this.props.navigation.goBack()}>
                 <Text style={[styles.font, {color: "#adb5bd", fontSize: 13, fontWeight: "bold"}]}>취소</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.ModalButton, {backgroundColor: '#2563EB'}]} onPress={()=> MakeTeam(this.state.teamname, this.state.uid ,this.props)}>
+                <TouchableOpacity style={[styles.ModalButton, {backgroundColor: '#2563EB'}]} onPress={()=> maketeam(this.state.teamname, this.state.token, this.props, this.context)}>
                 <Text style={[styles.font, {color: "white", fontSize: 13, fontWeight: "bold"}]}>생성</Text>
                 </TouchableOpacity>
                 </View>

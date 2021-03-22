@@ -16,3 +16,18 @@ export const islogin = (state, action) =>{
             return false;
     }
 }
+
+export const teamlistload = (state, action) =>{
+    if(typeof state === undefined) {
+        return false;
+    }
+
+    switch (action.type){
+        case 'true':
+            return true;
+        case 'false':
+            return false;
+        default:
+            return false;
+    }
+}
