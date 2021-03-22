@@ -5,14 +5,16 @@ import { connect, Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import * as Facebook from 'expo-facebook';
 
-import indexscreen from './screens/index';
+import AppNavigation from './navigators/App.navigator';
 import { islogin } from './service/redux.reducers';
 
 
 const store = createStore(combineReducers({islogin}));
+
+
 // reducer들을 store안에 넣어서 새로운 스토어를 생성해준다.
 
-const index  = connect(state => ({ islogin: state.islogin}))(indexscreen);
+const app  = connect(state => ({ islogin: state.islogin}))(AppNavigation);
 //indexscreen을 store에 연결해줍니다.
 
 const Stack = createStackNavigator();
@@ -23,7 +25,7 @@ export default class App extends Component{
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="Index" component={index}/>
+            <Stack.Screen name="app" component={app}/>
           </Stack.Navigator>
       </NavigationContainer>
     </Provider>
