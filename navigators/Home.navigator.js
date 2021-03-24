@@ -5,10 +5,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 
 import { Context } from '../service/conext';
-import HomeScreen from '../screens/home/home.screen';
-import SettingScreen from '../screens/home/setting/setting.screen';
+import HomeScreen from '../screens/home/Home.screen';
+import SettingScreen from '../screens/home/setting/Setting.screen';
+import TeamInfoNavigator from '../navigators/Teaminfo.navigator';
 
 const setting  = connect(state => ({ islogin: state.islogin}))(SettingScreen);
+const teaminfo  = connect(state => ({ islogin: state.islogin}))(TeamInfoNavigator);
 const home  = connect(state => ({ islogin: state.islogin }))(HomeScreen);
 
 const Stack = createStackNavigator();
@@ -63,39 +65,27 @@ export default class HomeNavigator extends Component{
                     </View>
                     )
                 }}/>
+                <Stack.Screen name="teaminfo" component={teaminfo} 
+                options={{
+                    headerStyle: {
+                    backgroundColor: 'transparent',
+                    elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0,
+                    },
+                    headerRight: ()=>(<></>),
+                    headerTitle: ()=>(<></>),
+                    headerLeft: ()=>(                    
+                    <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity style={{paddingLeft: 10}} onPress={()=> this.props.navigation.goBack()}>
+                            <Icon name="arrow-back" size={25} color="#3c444f"/>
+                        </TouchableOpacity>
+                        <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, marginLeft: 10}}>{this.context.selected.name}</Text>
+                    </View>)
+                }}/>
             </Stack.Navigator>
         )
     }
 }
-// }
-//   const [isteam, setIsTeam] = useState(false)
-//   const RootRef = firebase.database().ref();
-//   const userRef = RootRef.child('usersTeamList');
-//   const getUserInfo = firebase.auth().currentUser;
-
-//   useEffect(()=>{
-//     userRef.child(getUserInfo.uid).on('value', snap =>{
-//       if(!snap.exists()){
-//         setIsTeam(false)
-//       }
-//       else setIsTeam(true)
-//     })
-//   })
-  // const TeamMakeControl = () =>{
-  //   RootRef.child('users').child(getUserInfo.uid).child('uTeamList').once('value', Data =>{
-  //     const List = Data.val();
-  //     let TeamCount = 0;
-  //     //null값일 경우 0
-  //     if(!List) TeamCount = 0;
-  //     //null이 아닐경우
-  //     if(List) TeamCount = Object.keys(List).length;
-  //     //3이상 일경우.
-  //     if(TeamCount < 3) navigation.navigate('NewTeam')
-  //     else {
-  //       Alert.alert("", "팀은 최대 3팀까지 생성/가입이 가능합니다.");
-  //     }
-  //   })
-  //   .catch(error => alert(error));
-  // }
   
 
