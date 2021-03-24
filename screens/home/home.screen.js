@@ -48,11 +48,17 @@ export default class HomeScreen extends Component{
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.name}</Text>
                     </View>
                   : item.state == 1
-                  ? <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "white"}]} onPress={()=> TeamCheck( item )}>
+                  ? <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "white"}]} onPress={()=> {
+                    this.context.selected = item
+                    this.props.navigation.navigate('teaminfo');
+                  }}>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.tuid}</Text>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.name}</Text>
                     </TouchableOpacity>
-                  : <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "yellow"}]} onPress={()=> TeamCheck( item )}>
+                  : <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "yellow"}]} onPress={()=> {
+                     this.context.selected = item
+                     this.props.navigation.navigate('teaminfo');
+                  }}>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.tuid}</Text>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.name}</Text>
                     </TouchableOpacity>
