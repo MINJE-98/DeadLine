@@ -13,7 +13,6 @@ export default class HomeScreen extends Component{
     render(){
       return (
         <View>
-          
           {/* {listLoad ? <Text>리스트 로딩중..</Text> : */}
           <SafeAreaView style={[styles.ListView]}>
             <FlatList　
@@ -49,15 +48,13 @@ export default class HomeScreen extends Component{
                     </View>
                   : item.state == 1
                   ? <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "white"}]} onPress={()=> {
-                    this.context.selected = item
-                    this.props.navigation.navigate('teaminfo');
+                    this.props.navigation.navigate('teaminfoNavigator', {teaminfo: item});
                   }}>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.tuid}</Text>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.name}</Text>
                     </TouchableOpacity>
                   : <TouchableOpacity style={[styles.boxDefault, {marginBottom: 20, backgroundColor: "yellow"}]} onPress={()=> {
-                     this.context.selected = item
-                     this.props.navigation.navigate('teaminfo');
+                     this.props.navigation.navigate('teaminfoNavigator', {teaminfo: item});
                   }}>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.tuid}</Text>
                       <Text style={[{color: "#3c444f", fontSize: 15, fontWeight: "bold"}]}>{item.name}</Text>

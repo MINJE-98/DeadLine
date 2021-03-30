@@ -1,48 +1,69 @@
 import axios from 'axios';
-
+// const apiurl = `http://10.0.2.2:3000`
+const apiurl = `http://localhost:3000`
 
 export const get_data = (location, data) =>{
-        return axios.get(`http://10.0.2.2:3000/api/${location}/${data}`);
+        return axios.get(`${apiurl}/api/${location}/${data}`);
 }
 
 export const set_data = (location, data) =>{
-    return axios.post(`http://10.0.2.2:3000/api/${location}/${data}`);
+    return axios.post(`${apiurl}/api/${location}/${data}`);
 }
 
 export const get_userinfo = (token) =>{
     return axios.get(`https://graph.facebook.com/me?fields=id%2Cname%2Cemail%2Cpicture.type(large)&access_token=${token}`)
 }
-// 유저 존재 여부 확인
+// 유저 정보를 가져옵니다.
+// GET /api/auth
+// headers: token
+// params: null
 export const get_user = ( token ) =>{
-    return axios.get(`http://10.0.2.2:3000/api/auth`,{
+    return axios.get(`${apiurl}/api/auth`,{
         headers:{
             token: token
         }
     });
 }
-// 유저 등록
+// 유저 정보를 저장합니다.
+// POST /api/auth
+// headers: token
+// params: null
 export const set_user = ( token ) =>{
-    return axios.post(`http://10.0.2.2:3000/api/auth`,{},{headers:{token: token}});
+    return axios.post(`${apiurl}/api/auth`,{},{
+        headers:{
+            token: token
+        }
+    });
 }
 
-//팀 생성
+// 팀을 생성합니다.
+// POST /api/teams
+// headers: token
+// params: teamuid, teamname
 export const set_team = (token, teamuid, teamname) =>{
-    return axios.post(`http://10.0.2.2:3000/api/teams?teamuid=${teamuid}&teamname=${teamname}`,{},{
-        headers:{
-            token: token
-        }}
-    );
-}
-export const join_team = (token, teamuid) =>{
-    return axios.post(`http://10.0.2.2:3000/api/teams/members?teamuid=${teamuid}`,{},{
+    return axios.post(`${apiurl}/api/teams?teamuid=${teamuid}&teamname=${teamname}`,{},{
         headers:{
             token: token
         }}
     );
 }
 
-export const get_teamList = (token) =>{
-    return axios.get(`http://10.0.2.2:3000/api/teams`,{
+// POST /api/teams/members?teamuid=:temauid&state=:state
+// 팀에 가입합니다.
+// headers: token
+// params: teamuid, state
+export const join_team = (token, teamuid, state) =>{
+    return axios.post(`${apiurl}/api/teams/members?teamuid=${teamuid}&state=${state}`,{},{
+        headers:{
+            token: token
+        }}
+    );
+}
+// GET /api/teams/members/teamlist
+// 한 유저가 가입한 팀리스트를 가져옵니다.
+// headers: token
+export const get_user_teamlist = (token) =>{
+    return axios.get(`${apiurl}/api/teams/members/teamlist`,{
         headers: {
             token: token
         }

@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import { connect } from 'react-redux'
 import { AuthAsync } from '../service/facebookfnc'
 
 import SignInScreen from  '../screens/auth/Auth.Screen';
-import HomerootNavigator from './Modal.navigator';
+import ModalNavigator from './Modal.navigator';
+import TeaminfoNavigator from './Teaminfo.navigator';
 
 //스크린을 islogin store에 연결해줍니다.
 const Signin  = connect(state => ({ islogin: state.islogin}))(SignInScreen);
-const Home  = connect(state => ({ islogin: state.islogin}))(HomerootNavigator);
+const Home  = connect(state => ({ islogin: state.islogin}))(ModalNavigator);
 
 const Stack = createStackNavigator();
 export default class Index extends Component{
@@ -35,6 +37,7 @@ export default class Index extends Component{
                 ? <Stack.Screen name="Home" component={Home}/>
                 : <Stack.Screen name="Auth" component={Signin}/>
             }
+            <Stack.Screen name="teaminfoNavigator" component={TeaminfoNavigator}/>
             </Stack.Navigator>
         )
     }

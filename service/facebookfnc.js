@@ -1,8 +1,6 @@
 import * as Facebook from 'expo-facebook';
 
 import FacebookInit from '../service/facebook.config';
-import axios from 'axios';
-
 import * as api from '../service/Deadline.api';
 import { Alert } from 'react-native';
 
@@ -20,7 +18,8 @@ export const AuthAsync = async(props) => {
         // 2. 유저가 존재하는지 확인
         const get = await api.get_user(token);
         // 3. 로그인
-        if(get.data) props.dispatch({type: 'login'})
+        if(get.data.data != undefined) props.dispatch({type: 'login'})
+        else props.dispatch({type: 'logout'})
     } catch (error) {
         if (error.response) {
             // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.

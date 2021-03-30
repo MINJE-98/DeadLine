@@ -19,14 +19,19 @@ export const signInWithFacebook = async(props) =>{
       if (type === 'success') {
           console.log(token);
           // 2-1. 유저가 없을 시 생성
-          await api.set_user(token);
+          const get = await api.get_user(token);
+          console.log(get);
+          if(get.data.data == undefined) {
+            await api.set_user(token)
+            props.dispatch({type: 'login'})
+          }
+          else props.dispatch({type: 'login'})
           // 3. 로그인
-          props.dispatch({type: 'login'})
         }
     } catch (error) {
       if (error.response) {
+        console.log(error.response);
           // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
-          console.log(error.response);
           if (error.response.status === 404) {
               props.dispatch({type: 'logout'})
             } else {
@@ -38,7 +43,6 @@ export const signInWithFacebook = async(props) =>{
           // `error.request`는 브라우저의 XMLHttpRequest 인스턴스 또는
           // Node.js의 http.ClientRequest 인스턴스입니다.
           //console.log(error.request);
-          console.log("서버에서 응답받을 수 없음");
           Alert.alert("","통신을 실패하였습니다.")
       }
         else {

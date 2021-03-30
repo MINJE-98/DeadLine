@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, Text, Alert, View } from 'react-native';
-import  Icon  from 'react-native-vector-icons/MaterialIcons';
+import  MaterialIcons  from 'react-native-vector-icons/MaterialIcons';
+import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 
 import { Context } from '../service/conext';
-import HomeScreen from '../screens/home/Home.screen';
+import HomeScreen from '../screens//home/home.screen';
 import SettingScreen from '../screens/home/setting/Setting.screen';
 import TeamInfoNavigator from '../navigators/Teaminfo.navigator';
 
@@ -33,14 +34,14 @@ export default class HomeNavigator extends Component{
                     <View style={{flexDirection: 'row'}}>
                         {this.context.teamlist ? <>
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5 , padding: 10}} onPress={()=> this.props.navigation.navigate('maketeam')}>
-                        <Icon name="group-add" size={25} color="#3c444f" />
+                        <MaterialIcons name="group-add" size={25} color="#3c444f" />
                         </TouchableOpacity>
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5, padding: 10}} onPress={()=> this.props.navigation.navigate('jointeam')}>
-                        <Icon name="email" size={25} color="#3c444f"/>
+                        <MaterialIcons name="email" size={25} color="#3c444f"/>
                         </TouchableOpacity>
                         </> : <></>}
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5, padding: 10}} onPress={()=> this.props.navigation.navigate('setting')}>
-                        <Icon name="settings" size={25} color="#3c444f" />
+                        <MaterialIcons name="settings" size={25} color="#3c444f" />
                         </TouchableOpacity>
                     </View>
                     
@@ -59,29 +60,11 @@ export default class HomeNavigator extends Component{
                     headerLeft: ()=>(
                     <View style={{flexDirection: 'row'}}>
                         <TouchableOpacity style={{paddingLeft: 10}} onPress={()=> this.props.navigation.goBack()}>
-                            <Icon name="close" size={25} color="#3c444f"/>
+                            <MaterialIcons name="close" size={25} color="#3c444f"/>
                         </TouchableOpacity>
                         <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, marginLeft: 10}}></Text>
                     </View>
                     )
-                }}/>
-                <Stack.Screen name="teaminfo" component={teaminfo} 
-                options={{
-                    headerStyle: {
-                    backgroundColor: 'transparent',
-                    elevation: 0,
-                    shadowOpacity: 0,
-                    borderBottomWidth: 0,
-                    },
-                    headerRight: ()=>(<></>),
-                    headerTitle: ()=>(<></>),
-                    headerLeft: ()=>(                    
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={{paddingLeft: 10}} onPress={()=> this.props.navigation.goBack()}>
-                            <Icon name="arrow-back" size={25} color="#3c444f"/>
-                        </TouchableOpacity>
-                        <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, marginLeft: 10}}>{this.context.selected.name}</Text>
-                    </View>)
                 }}/>
             </Stack.Navigator>
         )

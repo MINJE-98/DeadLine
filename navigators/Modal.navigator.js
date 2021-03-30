@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 
-import MaketeamScreen from '../screens/home/teams/make/Make.screen';
-import jointeamScreen from '../screens/home/teams/join/Join.screen';
+import MaketeamScreen from '../screens/home/teams/make/make.screen';
+import jointeamScreen from '../screens/home/teams/join/join.screen';
 import homenavigator from './Home.navigator';
 import { Context } from '../service/conext';
 import { getTeamList } from '../controller/Home.controller';
@@ -21,14 +21,13 @@ export default class HomeModalNavigator extends Component{
         this.refresh = () =>{
             this.setState({ isload: true })
             get_token()
-            .then( token => getTeamList(token, this.props))
-            .then( result => this.setState({ teamlist: result}))
-            .then( ()=> this.setState({ isload: false })); 
+                .then( token => getTeamList(token, this.props))
+                .then( result => this.setState({ teamlist: result}))
+                .then( ()=> this.setState({ isload: false })); 
         }
 
         this.state = {
             teamlist: [],
-            teamselected: null,
             isload: true,
             refresh: this.refresh,
 
