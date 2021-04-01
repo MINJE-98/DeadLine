@@ -8,6 +8,8 @@ import { Context } from '../service/conext';
 
 import TeamInfoScreen from '../screens/teaminfo/Teaminfo.screen';
 import ScanScreen from '../screens/teaminfo/scan/scan.screen';
+import ScanNavigator from './Scan.navigator.js'
+import DeadlineScreen from '../screens/teaminfo/deadline/deadline.screen';
 
 const Stack = createStackNavigator();
 export default class TeaminfoStackNavigator extends Component {
@@ -42,31 +44,11 @@ export default class TeaminfoStackNavigator extends Component {
                             <TouchableOpacity style={{paddingLeft: 10}} onPress={()=> this.props.navigation.navigate('Home')}>
                                 <MaterialIcons name="arrow-back" size={25} color="#3c444f"/>
                             </TouchableOpacity>
-                            <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, marginLeft: 10}}>{this.context.name}</Text>
+                            <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, marginLeft: 10}}>{this.context.teaminfo.name}</Text>
                         </View>)
                     }}
                     />
-                    <Stack.Screen name="scanscreen" component={ScanScreen} 
-                        options={{
-                        headerStyle: {
-                        backgroundColor: 'transparent',
-                        elevation: 0,
-                        shadowOpacity: 0,
-                        borderBottomWidth: 0,
-                        },
-                        headerRight: ()=>(
-                            <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 18, marginRight: 10}}>앨범</Text>
-                        ),
-                        headerTitle: ()=>(
-                            <Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 18}}>상품 스캔</Text>
-                            ),
-                        headerLeft: ()=>(                    
-                        <View style={{flexDirection: 'row'}}>
-                            <TouchableOpacity style={{paddingLeft: 10}} onPress={()=> {this.context.hidetab(); this.props.navigation.navigate('teaminfoscreen')}}>
-                                <MaterialIcons name="arrow-back" size={25} color="#3c444f"/>
-                            </TouchableOpacity>
-                        </View>)
-                    }}/>
+                    <Stack.Screen name="scanscreen" component={ScanNavigator} options={{ headerShown: false }}/>
                 </Stack.Navigator>
           )
     }

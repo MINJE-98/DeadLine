@@ -48,7 +48,7 @@ export const set_team = (token, teamuid, teamname) =>{
     );
 }
 
-// POST /api/teams/members?teamuid=:temauid&state=:state
+// POST /api/teams/members?teamuid={temauid}&state={state}
 // 팀에 가입합니다.
 // headers: token
 // params: teamuid, state
@@ -64,6 +64,17 @@ export const join_team = (token, teamuid, state) =>{
 // headers: token
 export const get_user_teamlist = (token) =>{
     return axios.get(`${apiurl}/api/teams/members/teamlist`,{
+        headers: {
+            token: token
+        }
+    });
+}
+
+// GET /api/items?barcode={barcode}&teamuid={teamuid}
+// 팀에 상품에 있는지 확인합니다.
+// headers: token
+export const get_item = (token, barcode, teamuid) =>{
+    return axios.get(`${apiurl}/api/items?barcode=${barcode}&teamuid=${teamuid}`,{
         headers: {
             token: token
         }

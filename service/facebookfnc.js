@@ -9,17 +9,20 @@ import { Alert } from 'react-native';
  * 2. 유저가 존재하는지 확인
  * 3. 로그인
  */
-export const AuthAsync = async(props) => {
+export const AuthAsync = async() => {
     try {
         await FacebookInit;
         // 1. 유저 토큰을 받습니다.
         const auth = await Facebook.getAuthenticationCredentialAsync();
-        const token = auth.token;
-        // 2. 유저가 존재하는지 확인
-        const get = await api.get_user(token);
-        // 3. 로그인
-        if(get.data.data != undefined) props.dispatch({type: 'login'})
-        else props.dispatch({type: 'logout'})
+        if(auth == null) return null
+        else return auth.token
+        // props.dispatch({type: 'logout', payload: 'test'})
+        // const token = auth.token;
+        // // 2. 유저가 존재하는지 확인
+        // const get = await api.get_user(token);
+        // // 3. 로그인
+        // if(get.data.data != undefined) props.dispatch({type: 'login'})
+        // else props.dispatch({type: 'logout'})
     } catch (error) {
         if (error.response) {
             // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.

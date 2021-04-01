@@ -14,8 +14,9 @@ const Home  = connect(state => ({ islogin: state.islogin}))(ModalNavigator);
 
 const Stack = createStackNavigator();
 export default class Index extends Component{
-      componentDidMount(){
-        AuthAsync(this.props);
+        
+      async componentDidMount(){
+        console.log(this.props);
       }
         /**
          * 어플 실행시 유저 체크
@@ -33,7 +34,7 @@ export default class Index extends Component{
         return(
         <Stack.Navigator screenOptions={{headerShown: false}}>
             {
-                this.props.islogin
+                this.props.islogin == null
                 ? <Stack.Screen name="Home" component={Home}/>
                 : <Stack.Screen name="Auth" component={Signin}/>
             }

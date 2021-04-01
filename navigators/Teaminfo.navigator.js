@@ -14,14 +14,14 @@ export default class TeaminfoNavigator extends Component {
   
   constructor(props){
         super(props);
-        this.teaminfo = this.props.route.params.teaminfo;
         // scanscreen으로 갈때 탭 숨김.
         this.hidetab = () =>{
           this.setState({isHide: !this.state.isHide});
         }
         this.state ={
           isHide: true,
-          hidetab: this.hidetab
+          hidetab: this.hidetab,
+          teaminfo: this.props.route.params.teaminfo
           
         }
 
@@ -50,8 +50,7 @@ export default class TeaminfoNavigator extends Component {
                 showLabel: false
               }}
                 >
-                <AppTab.Screen name="teaminfotack" component={TeamInfoStackNavigator} options={{
-                }} />
+                <AppTab.Screen name="teaminfotack" component={TeamInfoStackNavigator} />
                 <AppTab.Screen name="setting" component={TeamSettingScreen} />
             </AppTab.Navigator>
           </Context.Provider>

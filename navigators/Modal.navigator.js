@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 
-import MaketeamScreen from '../screens/home/teams/make/make.screen';
-import jointeamScreen from '../screens/home/teams/join/join.screen';
+import MaketeamScreen from '../screens/home/teams/make/make.modal';
+import jointeamScreen from '../screens/home/teams/join/join.modal';
 import homenavigator from './Home.navigator';
 import { Context } from '../service/conext';
 import { getTeamList } from '../controller/Home.controller';
