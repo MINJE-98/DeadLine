@@ -6,12 +6,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { connect } from 'react-redux';
 
 import { Context } from '../service/conext';
-import HomeScreen from '../screens//home/home.screen';
+import HomeScreen from '../screens/home/home.screen';
 import SettingScreen from '../screens/home/setting/Setting.screen';
-import TeamInfoNavigator from '../navigators/Teaminfo.navigator';
+import TeamInfoNavigator from './Teaminfo.navigator';
 
 const setting  = connect(state => ({ islogin: state.islogin}))(SettingScreen);
-const teaminfo  = connect(state => ({ islogin: state.islogin}))(TeamInfoNavigator);
 const home  = connect(state => ({ islogin: state.islogin }))(HomeScreen);
 
 const Stack = createStackNavigator();
@@ -20,7 +19,7 @@ export default class HomeNavigator extends Component{
 
     render(){
         return(
-            <Stack.Navigator screenOptions={{ cardStyle: { backgroundColor: 'transparent' }}} mode="modal" screenOptions={{headerTitleAlign: 'center'}}>          
+            <Stack.Navigator>          
                 <Stack.Screen name="Home" component={home} options={{
                     headerStyle: {
                     backgroundColor: 'transparent',
@@ -32,14 +31,15 @@ export default class HomeNavigator extends Component{
                     headerLeft: ()=>(<Text style={{color: "#3c444f", fontWeight: 'bold', fontSize: 20, paddingLeft: 20, padding: 10}}>팀 리스트</Text>),
                     headerRight: ()=>(
                     <View style={{flexDirection: 'row'}}>
-                        {this.context.teamlist ? <>
+                        {console.log(this.context.teamlist)}
+
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5 , padding: 10}} onPress={()=> this.props.navigation.navigate('maketeam')}>
                         <MaterialIcons name="group-add" size={25} color="#3c444f" />
                         </TouchableOpacity>
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5, padding: 10}} onPress={()=> this.props.navigation.navigate('jointeam')}>
                         <MaterialIcons name="email" size={25} color="#3c444f"/>
                         </TouchableOpacity>
-                        </> : <></>}
+
                         <TouchableOpacity style={{paddingTop: 10, paddingLeft: 5, padding: 10}} onPress={()=> this.props.navigation.navigate('setting')}>
                         <MaterialIcons name="settings" size={25} color="#3c444f" />
                         </TouchableOpacity>

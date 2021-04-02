@@ -19,7 +19,7 @@ import * as api from '../service/Deadline.api';
 export const scanbarcode = async(token, barcode, teamuid, props) =>{
     try {
         const result = await api.get_item(token, barcode, teamuid);
-        props.navigation.navigate('deadline', {barcode: barcode, result: result.data.data[0]})
+        props.navigation.navigate('deadlineModal', { screen: 'deadline', params: {barcode: barcode, result: result.data.data[0]} });
     } catch (error) {
         if (error.response) {
             // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.

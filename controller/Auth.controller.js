@@ -18,7 +18,13 @@ export const signInWithFacebook = async(props) =>{
       });
       if (type === 'success') {
           // 2-1. 유저가 없을 시 생성
-          props.dispatch({type: 'login'})
+          const get = await api.get_user(token);
+          console.log(get);
+          if(get.data.data == undefined) {
+            await api.set_user(token)
+            props.dispatch({type: 'login'})
+          }
+          else props.dispatch({type: 'login'})
         }
     } catch (error) {
       if (error.response) {

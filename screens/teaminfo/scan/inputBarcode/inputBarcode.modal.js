@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { maketeam } from '../../../../controller/Home.controller';
 import { get_token } from '../../../../service/facebookfnc';
+import { scanbarcode } from '../../../../controller/Scan.controller';
 import { Context } from '../../../../service/conext';
 
+
 export default class InputBarcode extends Component {
+  static contextType = Context;
+
     state = {
         token: null
     }

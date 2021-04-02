@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, TextInput, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 
 
@@ -13,11 +13,14 @@ export default class ScanScreen extends Component {
             result: this.props.route.params.result
         }
     }
+    componentDidMount(){
+      if(this.state.result == undefined) this.props.navigation.navigate('itemlist', {barcode: this.state.barcode})
+    }
   render(){
     return (
         <View style={styles.container}>
             <Text>{this.state.barcode}</Text>
-            <Text>{this.state.result.name}</Text>
+            <Text>{this.state.result}</Text>
         </View>
       );
     }
@@ -27,6 +30,6 @@ const styles = StyleSheet.create({
   container:{
     flex: 1,
     alignItems: "center",
-    flexDirection: "column"
+    flexDirection: "column",
   }
 });

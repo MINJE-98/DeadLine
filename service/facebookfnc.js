@@ -5,24 +5,29 @@ import * as api from '../service/Deadline.api';
 import { Alert } from 'react-native';
 
 /**
- * 1. 토큰을 받음
- * 2. 유저가 존재하는지 확인
- * 3. 로그인
+ * 1. 사용자의 인증 상태를 확인합니다.
+ * 2. 사용자가 인증된 상태가 아닙니다.
+ * 3. API서버에 유저가 존재하는지 확인합니다.
+ * 4. 유저가 확인 되었습니다. 
+ * 5. 알 수 없는 유저입니다.
  */
-export const AuthAsync = async() => {
+export const AuthAsync = async(props) => {
     try {
         await FacebookInit;
-        // 1. 유저 토큰을 받습니다.
+        // 1. 사용자의 인증 상태를 확인합니다.
         const auth = await Facebook.getAuthenticationCredentialAsync();
-        if(auth == null) return null
-        else return auth.token
-        // props.dispatch({type: 'logout', payload: 'test'})
-        // const token = auth.token;
-        // // 2. 유저가 존재하는지 확인
-        // const get = await api.get_user(token);
-        // // 3. 로그인
-        // if(get.data.data != undefined) props.dispatch({type: 'login'})
-        // else props.dispatch({type: 'logout'})
+
+        // 2. 사용자가 인증된 상태가 아닙니다.
+        if(auth != null) props.dispatch({type: 'logout'})
+        else{
+            const token = auth.token;
+            // 3. 서버에 유저가 존재하는지 확인합니다.
+            const get = await api.get_user(token);
+            // 4. 유저가 확인 되었습니다. 
+            if(get.data.data != undefined) props.dispatch({type: 'login'})
+            // 5. 알 수 없는 유저입니다.
+            else props.dispatch({type: 'logout'})
+        }
     } catch (error) {
         if (error.response) {
             // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.

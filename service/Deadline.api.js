@@ -1,6 +1,6 @@
 import axios from 'axios';
-// const apiurl = `http://10.0.2.2:3000`
-const apiurl = `http://localhost:3000`
+const apiurl = `http://10.0.2.2:3000`
+// const apiurl = `http://localhost:3000`
 
 export const get_data = (location, data) =>{
         return axios.get(`${apiurl}/api/${location}/${data}`);
@@ -73,8 +73,21 @@ export const get_user_teamlist = (token) =>{
 // GET /api/items?barcode={barcode}&teamuid={teamuid}
 // 팀에 상품에 있는지 확인합니다.
 // headers: token
+// params: barcode, teamuid
 export const get_item = (token, barcode, teamuid) =>{
     return axios.get(`${apiurl}/api/items?barcode=${barcode}&teamuid=${teamuid}`,{
+        headers: {
+            token: token
+        }
+    });
+}
+
+// GET /api/items/list?barcode={barcode}
+// 상품 정보 리스트를 전부 받아옵니다.
+// headers: token
+// params: barcode
+export const get_itemlist = (token, barcode) =>{
+    return axios.get(`${apiurl}/api/items/list?barcode=${barcode}`,{
         headers: {
             token: token
         }

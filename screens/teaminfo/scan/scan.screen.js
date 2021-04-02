@@ -15,7 +15,6 @@ export default class ScanScreen extends Component {
     state ={
         scanned: false,
         barcodetype: 1,
-        inputmode: false,
         cameramode: false,
         barcode: "",
         token: null
@@ -44,7 +43,6 @@ export default class ScanScreen extends Component {
                 }
             </View>
             <View style={{ flex: 1, flexDirection: "row"}} >
-                {console.log(this.state.cameramode)}
                 {
                     this.state.cameramode
                     ? <View style={{flex: 1, flexDirection: "row"}}>
@@ -58,13 +56,11 @@ export default class ScanScreen extends Component {
                     : <>
                         <TouchableOpacity>
                             <FontAwesome name="pencil-square-o" size={20} />
-                            <Text style={{borderColor: "black", borderWidth: 1}} onPress={()=> {
-                                this.setState({barcodetype: 0, inputmode: true})
-                            }}>바코드입력</Text>
+                            <Text style={{borderColor: "black", borderWidth: 1}} onPress={()=> { this.props.navigation.navigate('inputcode') }}>바코드입력</Text>
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <FontAwesome name="barcode" size={20} />
-                            <Text style={{borderColor: "black", borderWidth: 1}} onPress={()=> this.setState({barcodetype: 1})}>바코드 스캔</Text>
+                            <Text style={{borderColor: "black", borderWidth: 1}} onPress={()=> scanbarcode(this.state.token, 12332, this.context.teaminfo.tuid, this.props)}>바코드 스캔</Text>
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <FontAwesome name="camera-retro" size={20} />
