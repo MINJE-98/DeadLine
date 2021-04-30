@@ -17,7 +17,6 @@ export const signInWithFacebook = async(props) =>{
         permissions: ['public_profile', 'email'],
       });
       if (type === 'success') {
-          console.log(token);
           // 2-1. 유저가 없을 시 생성
           const get = await api.get_user(token);
           console.log(get);
@@ -26,7 +25,6 @@ export const signInWithFacebook = async(props) =>{
             props.dispatch({type: 'login'})
           }
           else props.dispatch({type: 'login'})
-          // 3. 로그인
         }
     } catch (error) {
       if (error.response) {

@@ -1,34 +1,34 @@
 import React, { Component } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { connect } from 'react-redux'
-import { AuthAsync } from '../service/facebookfnc'
+import { connect } from 'react-redux';
 
+import { AuthAsync } from '../service/facebookfnc'
 import SignInScreen from  '../screens/auth/Auth.Screen';
-import ModalNavigator from './Modal.navigator';
+import ModalNavigator from './Team.modal';
 import TeaminfoNavigator from './Teaminfo.navigator';
+
+
+/**
+ * 앱 네비게이터입니다.
+ * 앱 네비게이터는 최상위 네비게이터 입니다.
+ * 
+ * redux의 상태에 따라 로그인, 로그아웃을 결정 하며,
+ * teaminfo네비게이터가 있습니다.
+ * 
+ */
 
 //스크린을 islogin store에 연결해줍니다.
 const Signin  = connect(state => ({ islogin: state.islogin}))(SignInScreen);
 const Home  = connect(state => ({ islogin: state.islogin}))(ModalNavigator);
 
 const Stack = createStackNavigator();
-export default class Index extends Component{
+export default class App extends Component{
+        
       componentDidMount(){
+        // 유저의 로그인 상태를 확인을 합니다.
         AuthAsync(this.props);
       }
-        /**
-         * 어플 실행시 유저 체크
-         * 1. 로그인 버튼을 누른다.
-         * 2. 토큰을 받아온다.
-         * 3. 토큰으로 db에 사용자 정보가 있는지 확인한다.
-         * 4-1. 유저가 있다.
-         *  1. 바뀐 데이터를 검증한다.
-         *  2. 마지막 로그인 일자를 변경한다.
-         * 4-2. 유저가 없다.
-         *  1. DB에 등록한다.
-         * 5. 등록이 완료되었으면 home으로 넘겨준다.
-        */
     render(){
         return(
         <Stack.Navigator screenOptions={{headerShown: false}}>

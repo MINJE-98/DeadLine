@@ -6,7 +6,7 @@ import { Context } from '../service/conext';
 
 // import TeamInfoScreen from '../screens/teaminfo/Teaminfo.screen';
 import TeamSettingScreen from '../screens/teaminfo/setting/setting.screen';
-import TeamInfoStackNavigator from '../navigators/Teaminfo.stack.navigator';
+import TeamInfoStackNavigator from './Teaminfo.stack.navigator';
 
 const AppTab = createBottomTabNavigator();
 export default class TeaminfoNavigator extends Component {
@@ -14,14 +14,28 @@ export default class TeaminfoNavigator extends Component {
   
   constructor(props){
         super(props);
-        this.teaminfo = this.props.route.params.teaminfo;
         // scanscreen으로 갈때 탭 숨김.
         this.hidetab = () =>{
           this.setState({isHide: !this.state.isHide});
         }
+
+        // 
+        this.inputcode = () =>{
+          this.setState({input: true, scan: false, snap: false});
+        }
+        this.scancode = () =>{
+          this.setState({input: false, scan: true, snap: false});
+        }
+        this.snapcode = () =>{
+          this.setState({input: false, scan: false, snap: true});
+        }
         this.state ={
           isHide: true,
-          hidetab: this.hidetab
+          hidetab: this.hidetab,
+          teaminfo: this.props.route.params.teaminfo,
+          input: false,
+          scan: false,
+          snap: false
           
         }
 
@@ -50,8 +64,7 @@ export default class TeaminfoNavigator extends Component {
                 showLabel: false
               }}
                 >
-                <AppTab.Screen name="teaminfotack" component={TeamInfoStackNavigator} options={{
-                }} />
+                <AppTab.Screen name="teaminfotack" component={TeamInfoStackNavigator} />
                 <AppTab.Screen name="setting" component={TeamSettingScreen} />
             </AppTab.Navigator>
           </Context.Provider>
