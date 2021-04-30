@@ -1,6 +1,6 @@
 .DS_Store
 node_modules/
 
-#service
-service/facebook.config.js
+#server config
+config/
 
