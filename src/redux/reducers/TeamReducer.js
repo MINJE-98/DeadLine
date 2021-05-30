@@ -17,7 +17,7 @@ export default TeamReducer = (state = defaultSate, action) =>{
         //     return {...state, isload: action.isload}
         // 초기 상태는 default에서 정합니다.
         default:
-            console.log("TeamReducer");
+            // console.log("TeamReducer");
             return state
     }
 }

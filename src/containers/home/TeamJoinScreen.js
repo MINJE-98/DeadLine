@@ -70,8 +70,6 @@ export default function TeamJoinScreen({ navigation }) {
   };
   return (
     <ActionModal
-      width={340}
-      height={220}
       mainMessage="팀 UID를 입력해주세요."
       exmessage={() => (
         <Text style={modalstyles.exMessage}>
@@ -89,20 +87,19 @@ export default function TeamJoinScreen({ navigation }) {
       foot={() => (
         <>
           <TouchableOpacity
-            style={[modalstyles.footButton, modalstyles.cancleButton]}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={modalstyles.cancleText}>취소</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
             style={[modalstyles.footButton, modalstyles.confirmButton]}
             onPress={() => jointeam()}
           >
             <Text style={modalstyles.confirmText}>가입</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[modalstyles.footButton, modalstyles.cancleButton]}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={modalstyles.cancleText}>취소</Text>
+          </TouchableOpacity>
         </>
       )}
-      flexDirection="row"
     />
   );
 }

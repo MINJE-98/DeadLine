@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Dimensions} from "react-native";
 import Inputbox from "./InputBox";
 import { deadlinestyles } from "../styles/light/styles";
+import { Platform } from "react-native";
 const screen = Dimensions.get("screen");
 export default function Deadline(props) {
   return (
@@ -32,10 +33,12 @@ export default function Deadline(props) {
         style={{
           flexDirection: "column",
           width: "100%",
-          height:  Platform.OS === "ios" ? screen.height / 2.14 : screen.height / 2.4 ,
+          height: Platform.OS === "ios" ?  screen.height < 780 ? screen.height / 2.1 : screen.height /  2.18
+          : screen.height < 780 ? screen.height / 2.2 : screen.height /  2.42,
           alignItems: "center",
         }}
       >
+        {console.log(screen)}
         <Inputbox IconName={"shopping-cart"} Inputbox={props.InputProdName()} />
         <Text
           style={[
@@ -45,6 +48,7 @@ export default function Deadline(props) {
               width: "80%",
               paddingTop: 20,
               fontSize: 15,
+              color: "#808080"
             },
           ]}
         >
@@ -53,7 +57,7 @@ export default function Deadline(props) {
         <Inputbox IconName={"calendar"} Inputbox={props.InputDateMask()} />
         <Inputbox
           IconName={"tag"}
-          Inputbox={<Text style={deadlinestyles.defaultFont}>유제품</Text>}
+          Inputbox={<Text style={[deadlinestyles.defaultFont, { color: "#3c444f"}]}>유제품</Text>}
         />
       </View>
       {/* 

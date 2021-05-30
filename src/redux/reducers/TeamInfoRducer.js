@@ -14,7 +14,7 @@ export default TeamInfoReducer = (state = defaultSate, action) =>{
         case SELECTED_TEAM_INFO:
             return {...state}
         default:
-            console.log("TeamInfoReducer");
+            // console.log("TeamInfoReducer");
             return state
     }
 }

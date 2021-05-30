@@ -23,12 +23,15 @@ export const HeaderLeftTitle = (props) => {
 export const HeaderLeftIcon = (props) => {
   return (
     <>
-      <TouchableOpacity style={headerstyles.headerLeftIcon} onPress={props.onPress}>
+      <TouchableOpacity style={[headerstyles.headerLeftIcon, headerstyles.defaultStyle, { flexDirection: 'row' }]} onPress={props.onPress}>
         {props.iconType == "MaterialIcons" ? (
           <MaterialIcons name={props.name} size={25} color="#3c444f" />
         ) : (
           <MaterialCommunityIcons name={props.name} size={25} color="#3c444f" />
         )}
+        <Text style={[headerstyles.defaultFont, { marginLeft: 10 }]}>
+          {props.text}
+        </Text>
       </TouchableOpacity>
     </>
   );
