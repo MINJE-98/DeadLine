@@ -8,7 +8,8 @@ import { useSelector } from 'react-redux';
 import ScanScreen from "../../containers/teaminfo/deadline/ScanScreen"
 import DeadlineScreen from '../../containers/teaminfo/deadline/DeadlineScreen'
 import TeamInfoScreen from "../../containers/teaminfo/TeaminfoScreen";
-import { HeaderRightIcon, HeaderLeftIcon, HeaderTitle } from "../../components/Header";
+import { HeaderRightIcon, HeaderLeftIcon, HeaderTitle, HeaderLeftTitle } from "../../components/Header";
+import { CommonActions } from "@react-navigation/routers";
 
 const Stack = createStackNavigator();
 export default function MainNavigation({ navigation }) {
@@ -43,15 +44,21 @@ export default function MainNavigation({ navigation }) {
                 name={"barcode-scan"}
                 onPress={() => navigation.navigate("ScanScreen")}
               />
+              <HeaderRightIcon
+                iconType={"MaterialIcons"}
+                name={"settings"}
+                onPress={() => navigation.navigate("Setting")}
+              />
               </View>
           ),
-          headerTitle: () => <HeaderTitle text={selected_team.name}/>,
+          headerTitle: () => <></>,
           headerLeft: () => (
             <View style={{ flexDirection: "row" }}>
             <HeaderLeftIcon
               iconType={"MaterialIcons"}
               name={"arrow-back"}
               onPress={() => navigation.goBack()}
+              text={selected_team.name}
             />
             </View>
           ),
@@ -64,11 +71,19 @@ export default function MainNavigation({ navigation }) {
             <HeaderLeftIcon
               iconType={"MaterialIcons"}
               name={"arrow-back"}
-              onPress={() => navigation.navigate('TeamInfo')}
+              onPress={() => navigation.dispatch( CommonActions.navigate('TeamInfo'))}
+              text={"상품 스캔"}
             />
             </View>
           ),
-          headerTitle: () => <HeaderTitle text={'상품 스캔'}/>,
+          headerTitle: ()=><></>,
+          headerRight: () => <>
+              <HeaderRightIcon
+                iconType={"FontAwesome5"}
+                name={"pen"}
+                onPress={() => navigation.navigate("InputBarcode")}
+              />
+          </>,
         }}
       />
       <Stack.Screen name="DeadlineScreen" component={DeadlineScreen} 
@@ -83,10 +98,11 @@ export default function MainNavigation({ navigation }) {
               iconType={"MaterialIcons"}
               name={"arrow-back"}
               onPress={() => navigation.navigate('ScanScreen')}
+              text={"상품 추가"}
             />
             </View>
           ),
-          headerTitle: () =>(<HeaderTitle text={'상품 추가'} />),
+          headerTitle: () =>(<></>),
         }}
       />
     </Stack.Navigator>

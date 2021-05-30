@@ -8,8 +8,8 @@ import rootReducer from '../reducers/index'
 const persistConfig ={
     key: 'root',
     storage: AsyncStorage,
-    whitelist: ['AuthReducer', 'TeamReducer', 'DeadlineReducer'],
-    backlist: ['TeamInfoReducer', 'ItemsReducer']
+    whitelist: ['AuthReducer', 'TeamReducer'],
+    backlist: ['TeamInfoReducer', 'ItemsReducer', 'DeadlineReducer']
 }
 
 // persistRducer 생성합니다.

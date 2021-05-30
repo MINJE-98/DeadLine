@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { config } from '../config/ApiURL'
+/******************
+ ****** AUTH ******
+ ******************/
 
 // 유저 정보를 가져옵니다.
 // GET /api/auth
@@ -23,6 +26,10 @@ export const set_user = ( token ) =>{
         }
     });
 }
+
+/******************
+ ****** TEAMS ******
+ ******************/
 
 // 팀을 생성합니다.
 // POST /api/teams
@@ -58,15 +65,23 @@ export const get_user_teamlist = (token) =>{
     });
 }
 
+///////////// 팀UID가 현재 유저가 가지고있는지 검증 //////////////////
+
+/******************
+ ****** ITEMS ******
+ ******************/
+
+
+
 // GET /api/items?barcode={barcode}&teamuid={teamuid}
 // 팀에 상품에 있는지 확인합니다.
 // headers: token
 // params: barcode, teamuid
-export const get_item = (token, barcode, teamuid) =>{
-    console.log(`${config.API_URL}/api/items?barcode=${barcode}&teamuid=${teamuid}`);
-    return axios.get(`${config.API_URL}/api/items?barcode=${barcode}&teamuid=${teamuid}`,{
+export const team_search_item = (token, barcode, teamuid) =>{
+    return axios.get(`${config.API_URL}/api/items?barcode=${barcode}`,{
         headers: {
-            token: token
+            token: token,
+            teamuid: teamuid
         }
     });
 }
@@ -75,35 +90,68 @@ export const get_item = (token, barcode, teamuid) =>{
 // 상품 정보 리스트를 전부 받아옵니다.
 // headers: token
 // params: barcode
-export const get_itemlist = (token, barcode) =>{
+export const total_search_item = (token, barcode, teamuid) =>{
     return axios.get(`${config.API_URL}/api/items/list?barcode=${barcode}`,{
         headers: {
-            token: token
+            token: token,
+            teamuid: teamuid
         }
     });
 }
 
-// POST /api/items?barcode={barcode}&prodname={prodname}&teamuid={teamuid}
+// POST /api/items?barcode={barcode}&prodname={prodname}&teamuid={teamuid}&imageURL={imageURL}
 // 아이템 생성
-// headers: token
-// params: barcode, prodname, teamuid
-export const set_item = (token, barcode, prodname, teamuid) =>{
-    return axios.post(`${config.API_URL}/api/items?barcode=${barcode}&prodname=${prodname}&teamuid=${teamuid}`,{},{
+// headers: token, teamuid
+// params: token, barcode, prodname, teamuid, imageURL
+export const set_item = (token, teamuid, barcode, prodname,  imageURL) =>{
+    return axios.post(`${config.API_URL}/api/items?barcode=${barcode}&prodname=${prodname}&imageURL=${imageURL}`,{},{
         headers:{
-            token: token
+            token: token,
+            teamuid: teamuid
         }}
     );
 }
 
-// POST /api/deadline?teamuid={teamuid}&goodsid={goodsid}&expdate={expdate}
-// 유통기한 생성
-// headers: token
-// params: teamuid, tagid, goodsid, expdate
-
-export const set_deladine = (token, teamuid, goodsid, expdate) =>{
-    return axios.post(`${config.API_URL}/api/deadline?teamuid=${teamuid}&goodsid=${goodsid}&expdate=${expdate}`,{},{
+// POST /api/items/fork?barcode={barcode}&prodname={prodname}&teamuid={teamuid}&imageURL={imageURL}&goodsid={goodsid}
+// 아이템 복사
+// headers: token, teamuid
+// params: token, barcode, prodname, teamuid, imageURL, goodsid
+export const fork_item = (token, barcode, prodname, teamuid, imageURL, goodsid) =>{
+    console.log(`${config.API_URL}/api/items?barcode=${barcode}&prodname=${prodname}&imageURL=${imageURL}&goodsid=${goodsid}`);
+    return axios.post(`${config.API_URL}/api/items/fork?barcode=${barcode}&prodname=${prodname}&imageURL=${imageURL}&goodsid=${goodsid}`,{},{
         headers:{
-            token: token
+            token: token,
+            teamuid: teamuid
+        }}
+    );
+}
+/************************
+ ****** DEADLINE ********
+ ************************/
+
+// POST /api/deadline?teamuid={teamuid}&goodsid={goodsid}&expdate={expdate}&barcode={barcode}&prodname={prodname}&imageURL={imageURL}
+// 유통기한 생성
+// headers: token, teamuid
+// params: goodsid, expdate, barcode, prodname, imageURL
+export const set_deadline = (token, teamuid, goodsid, expdate, barcode, prodname, imageURL) =>{
+    console.log(token, teamuid, goodsid, expdate, barcode, prodname, imageURL);
+    return axios.post(`${config.API_URL}/api/deadline?goodsid=${goodsid}&expdate=${expdate}&barcode=${barcode}&prodname=${prodname}&imageURL=${imageURL}`,{},{
+        headers:{
+            token: token,
+            teamuid: teamuid
+        }}
+    );
+}
+
+// GET /api/deadline?
+// 등록한 유통기한 불러오기
+// headers: token, teamuid
+
+export const get_deadline = (token, teamuid) =>{
+    return axios.get(`${config.API_URL}/api/deadline`,{
+        headers:{
+            token: token,
+            teamuid: teamuid
         }}
     );
 }

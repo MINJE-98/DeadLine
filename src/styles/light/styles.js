@@ -17,7 +17,7 @@ const defaultFont = {
 //기본 box 스타일입니다.
 const defaultBox = {
   padding: 30,
-  borderRadius: 20,
+  borderRadius: 10,
   backgroundColor: "white",
 };
 
@@ -34,6 +34,13 @@ export const loading = StyleSheet.create({
     backgroundColor: "black",
     width: "100%",
     height: "100%",
+  },
+  loginWall: {
+    position: "absolute", 
+    opacity: 0.5, 
+    backgroundColor: "black", 
+    width: "100%", 
+    height: "100%"
   },
 });
 export const homestyles = StyleSheet.create({
@@ -55,6 +62,7 @@ export const homestyles = StyleSheet.create({
 });
 export const deadlinestyles = StyleSheet.create({
   defaultFont,
+  defaultStyle,
   imageButton: {
     borderRadius: 100,
   },
@@ -74,12 +82,13 @@ export const deadlinestyles = StyleSheet.create({
   confirmButton: {
     alignItems: "center",
     backgroundColor: "#ea4c89",
-    height: "100%",
-    padding: "6.5%",
+    paddingTop: "6.7%",
+    height: "40%",
   },
   confirmText: {
     color: "#fff",
-    fontSize: 15,
+    alignContent: "center",
+    fontSize: 18,
   },
 });
 export const modalstyles = StyleSheet.create({
@@ -96,6 +105,7 @@ export const modalstyles = StyleSheet.create({
   // 텍스트 입력 스타일
   TextInput: {
     marginTop: 10,
+    marginBottom: 10,
     height: 30,
     width: 180,
     borderBottomWidth: 1,
@@ -107,19 +117,19 @@ export const modalstyles = StyleSheet.create({
     marginTop: 15,
     width: 90,
     padding: 12,
-    borderRadius: 20,
+    borderRadius: 10,
   },
   footButton: {
     marginLeft: 25,
     marginRight: 25,
-    marginTop: 30,
-    width: 90,
+    marginTop: 10,
+    width: "100%",
     padding: 12,
-    borderRadius: 20,
+    borderRadius: 10,
   },
   listviewButton: {
-    borderRadius: 20,
-    width: 90,
+    borderRadius: 10,
+    width: "100%",
     backgroundColor: "#ea4c89",
     alignItems: "center",
     marginTop: 20,
@@ -128,6 +138,17 @@ export const modalstyles = StyleSheet.create({
   cancleButton: {
     borderColor: "#adb5bd",
     borderWidth: 1,
+  },
+  listviewitems: {
+    flex: 1,
+    // justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    flexDirection: "row",
+  },
+  listviewitemsimage: {
+    width: "23%",
+    height: 60,
   },
   cancleText: {
     color: "#adb5bd",
@@ -147,6 +168,7 @@ export const modalstyles = StyleSheet.create({
 });
 export const headerstyles = StyleSheet.create({
   defaultFont,
+  defaultStyle,
   headerTitle: {},
   headerRightIcon: {
     paddingRight: 5,

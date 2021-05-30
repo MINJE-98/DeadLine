@@ -4,6 +4,7 @@ import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/
 
 import MainNavigation from "./MainNavigation";
 import ItemlistScreen from "../../containers/teaminfo/deadline/ItemlistScreen";
+import InputBarcode from "../../containers/teaminfo/deadline/InputBarcode";
 
 /**
  * HOME -> MODAL네비게이션입니다.
@@ -31,22 +32,45 @@ export default class ModalNavigation extends Component {
             headerShown: false,
             cardStyle: { backgroundColor: "transparent" },
             cardOverlayEnabled: true,
-            cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid
-            // cardStyleInterpolator: ({ current: { progress } }) => ({
-            //   cardStyle: {
-            //     opacity: progress.interpolate({
-            //       inputRange: [0, 0.5, 0.9, 1],
-            //       outputRange: [0, 0.25, 0.7, 1],
-            //     }),
-            //   },
-            //   overlayStyle: {
-            //     opacity: progress.interpolate({
-            //       inputRange: [0, 1],
-            //       outputRange: [0, 0.5],
-            //       extrapolate: "identity",
-            //     }),
-            //   },
-            // }),
+            cardStyleInterpolator: ({ current: { progress } }) => ({
+              cardStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 0.5, 0.9, 1],
+                  outputRange: [0, 0.25, 0.7, 1],
+                }),
+              },
+              overlayStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.5],
+                  extrapolate: "identity",
+                }),
+              },
+            }),
+          }}
+        />
+        <Stack.Screen
+          name="InputBarcode"
+          component={InputBarcode}
+          options={{
+            headerShown: false,
+            cardStyle: { backgroundColor: "transparent" },
+            cardOverlayEnabled: true,
+            cardStyleInterpolator: ({ current: { progress } }) => ({
+              cardStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 0.5, 0.9, 1],
+                  outputRange: [0, 0.25, 0.7, 1],
+                }),
+              },
+              overlayStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.5],
+                  extrapolate: "identity",
+                }),
+              },
+            }),
           }}
         />
       </Stack.Navigator>

@@ -16,7 +16,7 @@ export default AuthReducer = (state = defaultSate, action) =>{
             return {...state, token: null}
         // 초기 상태는 default에서 정합니다.
         default:
-            console.log("AuthReducer");
+            // console.log("AuthReducer");
             return state
     }
 }

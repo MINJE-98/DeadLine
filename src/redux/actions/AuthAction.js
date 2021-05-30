@@ -46,7 +46,7 @@ const set_token = () => {
         }
       } else if (error.request) {
         // 요청이 이루어 졌으나 응답을 받지 못했습니다.
-        Alert.alert("통신을 실패", "통신 실패하였습니다.");
+        Alert.alert("통신 실패", "통신 실패하였습니다.");
       } else {
         // 오류를 발생시킨 요청을 설정하는 중에 문제가 발생했습니다.
         console.log("Error", error.message);
