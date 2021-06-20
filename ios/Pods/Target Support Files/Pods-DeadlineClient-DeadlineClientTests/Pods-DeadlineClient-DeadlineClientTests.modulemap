@@ -1,6 +1,0 @@
-module Pods_DeadlineClient_DeadlineClientTests {
-  umbrella header "Pods-DeadlineClient-DeadlineClientTests-umbrella.h"
-
-  export *
-  module * { export * }
-}
