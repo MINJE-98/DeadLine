@@ -1,0 +1,6 @@
+module Pods_DeadLine_DeadLineTests {
+  umbrella header "Pods-DeadLine-DeadLineTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
